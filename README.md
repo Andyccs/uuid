@@ -1,34 +1,37 @@
-# Build using CMAKE
+# Usages
 
-```shell
-# From root directory
-mkdir build
-cd build
-cmake ../
-cmake --build .
-./Andyccs
+```
+#include "uuid_basic.h"
+#include "uuid_simd.h"
+
+#include <random>
+
+int main() {
+  andyccs::BasicUuidV4Generator<std::mt19937_64> generator;
+
+  // Generate a arandom BasicUuidV4
+  andyccs::BasicUuidV4 uuid_1 = generator.GenerateUuid();
+  std::cout << "BasicUuidV4 1: " << std::string(uuid_1) << std::endl;
+
+  // Construct a BasicUuidV4
+  andyccs::BasicUuidV4 uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "BasicUuidV4 2: " << std::string(uuid_2) << std::endl;
+  andyccs::BasicUuidV4Generator<std::mt19937_64> generator;
+
+  // Generate a random SimdUuidV4Generator
+  andyccs::SimdUuidV4Generator<std::mt19937_64> generator;
+  andyccs::SimdUuidV4 uuid_3 = generator.GenerateUuid();
+  std::cout << "SimdUuidV4 3: " << std::string(uuid_3) << std::endl;
+
+  // Construct a SimdUuidV4
+  andyccs::SimdUuidV4 uuid_4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "SimdUuidV4 4: " << std::string(uuid_4) << std::endl;
+
+  return 0;
+}
 ```
 
-# Rebuild
-
-```shell
-cmake --build . && ./Andyccs
-```
-
-# Unit Tests
-
-```shell
-cmake --build . && ctest --rerun-failed --output-on-failure
-```
-
-# Benchmark
-
-```shell
-cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./uuid_basic_benchmark_test
-cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./uuid_simd_benchmark_test
-```
-
-Results
+## Benchmark Results
 
 ```
 2024-12-29T20:59:03-08:00
@@ -89,7 +92,39 @@ BM_SimdUuidV4GeneratorMt19937_64/64         138 ns          141 ns      4957468
 BM_SimdUuidV4GeneratorMt19937_64/256        536 ns          547 ns      1244086
 ```
 
-# Clean up
+# Development
+
+## Build using CMAKE
+
+```shell
+# From root directory
+mkdir build
+cd build
+cmake ../
+cmake --build .
+./Andyccs
+```
+
+## Rebuild
+
+```shell
+cmake --build . && ./Andyccs
+```
+
+## Unit Tests
+
+```shell
+cmake --build . && ctest --rerun-failed --output-on-failure
+```
+
+## Benchmark
+
+```shell
+cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./uuid_basic_benchmark_test
+cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./uuid_simd_benchmark_test
+```
+
+## Clean up
 
 ```shell
 # From root directory
