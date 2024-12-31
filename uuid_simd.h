@@ -37,6 +37,7 @@ public:
   // Default constructor for SimdUuidV4
   constexpr SimdUuidV4() = default;
   constexpr SimdUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
+  SimdUuidV4(const std::uint8_t (&data)[16]);
 
   // Copy constructor and assignment operator
   SimdUuidV4(const SimdUuidV4 &other) = default;

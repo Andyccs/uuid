@@ -10,7 +10,16 @@
 #include <random>
 #include <stdint.h>
 #include <string>
+#include <sys/types.h>
 #include <unordered_map>
+
+uint64_t convert_to_uint64(const uint8_t *array) {
+  uint64_t result = 0;
+  for (int i = 0; i < 8; ++i) {
+    result |= (uint64_t)array[i] << (8 * (7 - i));
+  }
+  return result;
+}
 
 int main() {
   // Generate a random BasicUuidV4
@@ -67,6 +76,10 @@ int main() {
   boost::uuids::string_generator gen;
   boost::uuids::uuid boost_uuid_4 = gen(from);
   std::cout << "Boost UUID 4: " << boost_uuid_4 << std::endl;
+
+  uint64_t high = convert_to_uint64(data);
+  uint64_t low = convert_to_uint64(&data[8]);
+  printf("%lX %lX\n", high, low);
 
   return 0;
 }

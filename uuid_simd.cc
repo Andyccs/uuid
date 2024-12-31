@@ -260,9 +260,22 @@ inline __m128i stom128i(__m256i pretty_input) {
                         _mm256_extract_epi64(hadd_result, 2));
 }
 
+uint64_t convert_to_uint64(const uint8_t *array) {
+  uint64_t result = 0;
+  for (int i = 0; i < 8; ++i) {
+    result |= (uint64_t)array[i] << (8 * (7 - i));
+  }
+  return result;
+}
+
 } // namespace
 
 static constexpr char kHexMap[] = {"0123456789ABCDEF"};
+
+SimdUuidV4::SimdUuidV4(const std::uint8_t (&data)[16]) {
+  high_ = convert_to_uint64(data);
+  low_ = convert_to_uint64(&data[8]);
+}
 
 void SimdUuidV4::ToString(std::string &result) const {
   result.resize(36);

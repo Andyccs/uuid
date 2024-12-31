@@ -23,6 +23,14 @@ TEST(SimdUuidV4, FromString) {
   EXPECT_EQ(std::string(*uuid), from);
 }
 
+TEST(BasicUuidV4, FromData) {
+  std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  SimdUuidV4 uuid(data);
+  EXPECT_EQ(std::string(uuid), from);
+}
+
 TEST(SimdUuidV4, FromStringInvalidChar) {
   std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
   for (int i = 0; i < 36; ++i) {

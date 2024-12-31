@@ -15,6 +15,18 @@ static void BM_SimdUuidV4FromString(benchmark::State &state) {
 }
 BENCHMARK(BM_SimdUuidV4FromString)->Range(1 << 8, 1 << 8);
 
+static void BM_SimdUuidV4FromData(benchmark::State &state) {
+  // "FEDCBA98-7654-3210-8899-AABBCCDDEEFF";
+  std::uint8_t data[16] = {0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
+                           0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
+  for (auto _ : state) {
+    for (int i = 0; i < state.range(0); ++i) {
+      benchmark::DoNotOptimize(SimdUuidV4(data));
+    }
+  }
+}
+BENCHMARK(BM_SimdUuidV4FromData)->Range(1 << 8, 1 << 8);
+
 static void BM_SimdUuidV4ToString(benchmark::State &state) {
   SimdUuidV4 uuid(8507, 9486);
   for (auto _ : state) {

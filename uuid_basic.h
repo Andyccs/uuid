@@ -32,6 +32,7 @@ public:
   // Default constructor for BasicUuidV4
   constexpr BasicUuidV4() = default;
   constexpr BasicUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
+  BasicUuidV4(const std::uint8_t (&data)[16]);
 
   // Copy constructor and assignment operator
   BasicUuidV4(const BasicUuidV4 &other) = default;

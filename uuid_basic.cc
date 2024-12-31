@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include <cmath>
+#include <cstring>
 #include <optional>
 
 namespace andyccs {
@@ -15,9 +16,22 @@ inline bool IsValid(const char &c) {
   return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
 }
 
+uint64_t convert_to_uint64(const uint8_t *array) {
+  uint64_t result = 0;
+  for (int i = 0; i < 8; ++i) {
+    result |= (uint64_t)array[i] << (8 * (7 - i));
+  }
+  return result;
+}
+
 } // namespace
 
 static constexpr char kHexMap[] = {"0123456789ABCDEF"};
+
+BasicUuidV4::BasicUuidV4(const std::uint8_t (&data)[16]) {
+  high_ = convert_to_uint64(data);
+  low_ = convert_to_uint64(&data[8]);
+}
 
 void BasicUuidV4::ToString(std::string &result) const {
   result.resize(36);
