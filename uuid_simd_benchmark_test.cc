@@ -13,7 +13,7 @@ static void BM_SimdUuidV4FromString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4FromString)->Range(1, 1 << 8);
+BENCHMARK(BM_SimdUuidV4FromString)->Range(1 << 8, 1 << 8);
 
 static void BM_SimdUuidV4ToString(benchmark::State &state) {
   SimdUuidV4 uuid(8507, 9486);
@@ -23,7 +23,7 @@ static void BM_SimdUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4ToString)->Range(1, 1 << 8);
+BENCHMARK(BM_SimdUuidV4ToString)->Range(1 << 8, 1 << 8);
 
 static void BM_SimdUuidV4ToStringPrealloc(benchmark::State &state) {
   SimdUuidV4 uuid(8507, 9486);
@@ -36,7 +36,7 @@ static void BM_SimdUuidV4ToStringPrealloc(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4ToStringPrealloc)->Range(1, 1 << 8);
+BENCHMARK(BM_SimdUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
 
 static void BM_SimdUuidV4GeneratorMt19937(benchmark::State &state) {
   SimdUuidV4Generator<std::mt19937> generator;
@@ -46,7 +46,7 @@ static void BM_SimdUuidV4GeneratorMt19937(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4GeneratorMt19937)->Range(1, 1 << 8);
+BENCHMARK(BM_SimdUuidV4GeneratorMt19937)->Range(1 << 8, 1 << 8);
 
 static void BM_SimdUuidV4GeneratorMt19937_64(benchmark::State &state) {
   SimdUuidV4Generator<std::mt19937_64> generator;
@@ -56,7 +56,7 @@ static void BM_SimdUuidV4GeneratorMt19937_64(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4GeneratorMt19937_64)->Range(1, 1 << 8);
+BENCHMARK(BM_SimdUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 
 } // namespace andyccs
 

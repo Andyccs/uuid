@@ -2,6 +2,9 @@
 #include "uuid_basic.h"
 #include "uuid_simd.h"
 
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <immintrin.h>
 #include <iostream>
 #include <random>
@@ -45,6 +48,25 @@ int main() {
   // SimdUuidV4 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
 
   std::unordered_map<andyccs::BasicUuidV4, std::string> my_map;
+
+  // auto generator = boost::uuids::random_generator();
+  boost::uuids::basic_random_generator<std::mt19937> generator;
+  boost::uuids::uuid boost_uuid_1 = generator();
+  std::cout << "Boost UUID 1: " << boost_uuid_1 << std::endl;
+
+  std::uint8_t data[16] = {0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
+                           0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
+  boost::uuids::uuid boost_uuid_2(data);
+  std::cout << "Boost UUID 2: " << boost_uuid_2 << std::endl;
+
+  char str[37];
+  boost::uuids::to_chars<char, 37>(boost_uuid_2, str);
+  std::cout << "Boost UUID 3: " << std::string(str) << std::endl;
+
+  std::string from = "FEDCBA98-7654-3210-8899-AABBCCDDEEFF";
+  boost::uuids::string_generator gen;
+  boost::uuids::uuid boost_uuid_4 = gen(from);
+  std::cout << "Boost UUID 4: " << boost_uuid_4 << std::endl;
 
   return 0;
 }

@@ -38,6 +38,7 @@ include(FetchContent)
 FetchContent_Declare(
   googletest
   URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 FetchContent_MakeAvailable(googletest)
 enable_testing()
@@ -47,6 +48,7 @@ include(GoogleTest)
 FetchContent_Declare(
   googlebenchmark
   URL https://github.com/google/benchmark/archive/refs/tags/v1.9.1.zip
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
 )
 FetchContent_MakeAvailable(googlebenchmark)
 
@@ -70,11 +72,22 @@ gtest_discover_tests(uuid_simd_test)
 add_executable(uuid_simd_benchmark_test uuid_simd_benchmark_test.cc)
 target_link_libraries(uuid_simd_benchmark_test uuid_simd benchmark::benchmark andyccs_compiler_flags)
 
+# benchmark of other libraries
+FetchContent_Declare(
+  Boost
+  URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.gz
+  DOWNLOAD_EXTRACT_TIMESTAMP ON
+)
+set(BOOST_INCLUDE_LIBRARIES uuid)
+FetchContent_MakeAvailable(Boost)
+add_executable(uuid_benchmark_test uuid_benchmark_test.cc)
+target_link_libraries(uuid_benchmark_test benchmark::benchmark Boost::uuid andyccs_compiler_flags)
+
 #### Executable
 
 # add the executable
 add_executable(Andyccs main.cc)
-target_link_libraries(Andyccs PUBLIC uuid_basic uuid_simd andyccs_compiler_flags)
+target_link_libraries(Andyccs PUBLIC uuid_basic uuid_simd Boost::uuid andyccs_compiler_flags)
 
 # add the binary tree to the search path for include files
 # so that we will find AndyccsConfig.h

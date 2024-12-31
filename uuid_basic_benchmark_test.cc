@@ -13,7 +13,7 @@ static void BM_BasicUuidV4FromString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4FromString)->Range(1, 1 << 8);
+BENCHMARK(BM_BasicUuidV4FromString)->Range(1 << 8, 1 << 8);
 
 static void BM_BasicUuidV4ToString(benchmark::State &state) {
   BasicUuidV4 uuid(8507, 9486);
@@ -23,7 +23,7 @@ static void BM_BasicUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4ToString)->Range(1, 1 << 8);
+BENCHMARK(BM_BasicUuidV4ToString)->Range(1 << 8, 1 << 8);
 
 static void BM_BasicUuidV4ToStringPrealloc(benchmark::State &state) {
   BasicUuidV4 uuid(8507, 9486);
@@ -36,7 +36,7 @@ static void BM_BasicUuidV4ToStringPrealloc(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4ToStringPrealloc)->Range(1, 1 << 8);
+BENCHMARK(BM_BasicUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
 
 static void BM_BasicUuidV4GeneratorMt19937(benchmark::State &state) {
   BasicUuidV4Generator<std::mt19937> generator;
@@ -46,7 +46,7 @@ static void BM_BasicUuidV4GeneratorMt19937(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4GeneratorMt19937)->Range(1, 1 << 8);
+BENCHMARK(BM_BasicUuidV4GeneratorMt19937)->Range(1 << 8, 1 << 8);
 
 static void BM_BasicUuidV4GeneratorMt19937_64(benchmark::State &state) {
   BasicUuidV4Generator<std::mt19937_64> generator;
@@ -56,7 +56,7 @@ static void BM_BasicUuidV4GeneratorMt19937_64(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4GeneratorMt19937_64)->Range(1, 1 << 8);
+BENCHMARK(BM_BasicUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 
 } // namespace andyccs
 
