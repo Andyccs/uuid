@@ -31,7 +31,22 @@ class BasicUuidV4 {
 public:
   // Default constructor for BasicUuidV4
   constexpr BasicUuidV4() = default;
+
+  // Construct BasicUuidV4 from two uint64_t. Example:
+  // - high = 0xF448CB35C48445F2
+  // - low  = 0xB7622A19E4E96ED2
+  // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
   constexpr BasicUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
+  BasicUuidV4(const std::uint8_t (&data)[16]);
+
+  // Construct BasicUuidV4 from a 16-byte array. Example:
+  // - data = {
+  //     "0xF4", "0x48", "0xCB", "0x35", "0xC4", "0x84", "0x45", "0xF2",
+  //     "0xB7", "0x62", "0x2A", "0x19", "0xE4", "0xE9", "0x6E", "0xD2"
+  //   }
+  // - high = 0xF448CB35C48445F2
+  // - low  = 0xB7622A19E4E96ED2
+  // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
   BasicUuidV4(const std::uint8_t (&data)[16]);
 
   // Copy constructor and assignment operator
