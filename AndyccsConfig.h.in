@@ -1,0 +1,3 @@
+// The configured options and settings for this project
+#define ANDYCCS_VERSION_MAJOR @Andyccs_VERSION_MAJOR@
+#define ANDYCCS_VERSION_MINOR @Andyccs_VERSION_MINOR@
