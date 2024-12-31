@@ -136,3 +136,4 @@ rm -r build/
 - Experiment with `uint8_t data[16]` instead of two `unint64_t`
 - Override stream operators
 - Benchmarking comparisons with other libraries
+- Thread safe generators
