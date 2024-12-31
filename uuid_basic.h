@@ -30,7 +30,9 @@ public:
   BasicUuidV4 &operator=(BasicUuidV4 &&other) = default;
 
   // Convert BasicUuidV4 to UUID V4 string.
-  operator std::string() const;
+  // This function is marked explicit to prevent accidental conversion to
+  // string.
+  explicit operator std::string() const;
 
   // Convert BasicUuidV4 to UUID V4 string and return the result in the provided
   // string ref.
@@ -45,6 +47,8 @@ public:
   }
 
   bool operator!=(const BasicUuidV4 &other) const { return !(*this == other); }
+
+  size_t hash() const;
 
 private:
   uint64_t high_ = 0;
@@ -77,5 +81,11 @@ private:
 };
 
 } // namespace andyccs
+
+template <> struct std::hash<andyccs::BasicUuidV4> {
+  size_t operator()(const andyccs::BasicUuidV4 &uuid) const noexcept {
+    return uuid.hash();
+  }
+};
 
 #endif // ANDYCCS_UUID_BASIC_H

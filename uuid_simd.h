@@ -30,7 +30,9 @@ public:
   SimdUuidV4 &operator=(SimdUuidV4 &&other) = default;
 
   // Convert SimdUuidV4 to UUID V4 string.
-  operator std::string() const;
+  // This function is marked explicit to prevent accidental conversion to
+  // string.
+  explicit operator std::string() const;
 
   // Convert SimdUuidV4 to UUID V4 string and return the result in the provided
   // string ref.
@@ -45,6 +47,8 @@ public:
   }
 
   bool operator!=(const SimdUuidV4 &other) const { return !(*this == other); }
+
+  size_t hash() const;
 
 private:
   uint64_t high_ = 0;
@@ -77,5 +81,11 @@ private:
 };
 
 } // namespace andyccs
+
+template <> struct std::hash<andyccs::SimdUuidV4> {
+  size_t operator()(const andyccs::SimdUuidV4 &uuid) const noexcept {
+    return uuid.hash();
+  }
+};
 
 #endif // ANDYCCS_UUID_SIMD_H

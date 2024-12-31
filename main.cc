@@ -7,6 +7,7 @@
 #include <random>
 #include <stdint.h>
 #include <string>
+#include <unordered_map>
 
 int main() {
   // Generate a random BasicUuidV4
@@ -42,6 +43,8 @@ int main() {
       andyccs::SimdUuidV4::FromString("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
   std::cout << "SimdUuidV4 3: " << std::string(*simd_uuid_3) << std::endl;
   // SimdUuidV4 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
+
+  std::unordered_map<andyccs::BasicUuidV4, std::string> my_map;
 
   return 0;
 }

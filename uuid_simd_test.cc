@@ -53,6 +53,18 @@ TEST(SimdUuidV4, FromStringInvalidLowerCase) {
   }
 }
 
+TEST(BasicUuidV4, HashNoCollision) {
+  SimdUuidV4 uuid_1 = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  SimdUuidV4 uuid_2 = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFE);
+  EXPECT_NE(uuid_1.hash(), uuid_2.hash());
+}
+
+TEST(SimdUuidV4, HashType) {
+  SimdUuidV4 uuid = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::unordered_map<SimdUuidV4, std::string> my_map = {{uuid, "Hello World"}};
+  EXPECT_EQ(my_map[uuid], "Hello World");
+}
+
 TEST(SimdUuidV4Generator, GenerateUUIDUsingMt199937) {
   SimdUuidV4Generator<std::mt19937> generator;
   SimdUuidV4 uuid = generator.GenerateUuid();

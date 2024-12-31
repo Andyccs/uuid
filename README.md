@@ -130,3 +130,9 @@ cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./uuid_simd_benchmark_
 # From root directory
 rm -r build/
 ```
+
+## TODO
+
+- Experiment with `uint8_t data[16]` instead of two `unint64_t`
+- Override stream operators
+- Benchmarking comparisons with other libraries

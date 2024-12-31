@@ -53,6 +53,18 @@ TEST(BasicUuidV4, FromStringInvalidLowerCase) {
   }
 }
 
+TEST(BasicUuidV4, HashNoCollision) {
+  BasicUuidV4 uuid_1 = BasicUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  BasicUuidV4 uuid_2 = BasicUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFE);
+  EXPECT_NE(uuid_1.hash(), uuid_2.hash());
+}
+
+TEST(BasicUuidV4, HashType) {
+  BasicUuidV4 uuid = BasicUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::unordered_map<BasicUuidV4, std::string> my_map = {{uuid, "Hello World"}};
+  EXPECT_EQ(my_map[uuid], "Hello World");
+}
+
 TEST(BasicUuidV4Generator, GenerateUUIDUsingMt199937) {
   BasicUuidV4Generator<std::mt19937> generator;
   BasicUuidV4 uuid = generator.GenerateUuid();

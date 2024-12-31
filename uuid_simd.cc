@@ -297,4 +297,8 @@ std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
   return SimdUuidV4(high, low);
 }
 
+size_t SimdUuidV4::hash() const {
+  return high_ ^ (low_ + 0x9e3779b9 + (high_ << 6) + (high_ >> 2));
+}
+
 } // namespace andyccs

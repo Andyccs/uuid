@@ -104,4 +104,8 @@ std::optional<BasicUuidV4> BasicUuidV4::FromString(std::string_view from) {
   return BasicUuidV4(high, low);
 }
 
+size_t BasicUuidV4::hash() const {
+  return high_ ^ (low_ + 0x9e3779b9 + (high_ << 6) + (high_ >> 2));
+}
+
 } // namespace andyccs
