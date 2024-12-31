@@ -9,23 +9,40 @@
 
 namespace andyccs {
 
-// UUID V4 has a total of 32 characters.
-// Each character represents a hex value (4 bits).
-// So there is a total of 32 * 4 = 128 bits of information.
+// SimdUuidV4 represents a UUID (Universally Unique Identifier) with 32
+// hexadecimal characters ('0' to '9' and 'A' to 'F') and 4 dashes, formatted as
+// follows:
 //
-// Example UUID V4:
-// F448CB35-C484-45F2-B762-2A19E4E96ED2
+// XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+//
+// Each hexadecimal character represents 4 bits, resulting in a total of 32 * 4
+// = 128 bits. SimdUuidV4 stores these 128 bits as two 64-bit unsigned integers,
+// referred to as 'high' and 'low'.
+//
+// Example SimdUuidV4:
+// - high = 0xF448CB35C48445F2
+// - low  = 0xB7622A19E4E96ED2
+// - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
+//
+// Note: SimdUuidV4 is a simplified version of UUID V4 and does not comply with
+// RFC 4122 and RFC 9562. It does not set the version and variant fields as
+// specified in these RFCs.
+//
+// This implementation utilizes SIMD (Single Instruction, Multiple Data)
+// instructions to significantly improve performance. Parsing a UUID from a
+// string is 9 times faster, and creating a UUID string is 3 times faster
+// compared to BasicUuidV4.
 class SimdUuidV4 {
 public:
-  // Default SimdUuidV4
+  // Default constructor for SimdUuidV4
   constexpr SimdUuidV4() = default;
   constexpr SimdUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
 
-  // Copyable
+  // Copy constructor and assignment operator
   SimdUuidV4(const SimdUuidV4 &other) = default;
   SimdUuidV4 &operator=(const SimdUuidV4 &other) = default;
 
-  // Moveable
+  // Move constructor and assignment operator
   SimdUuidV4(SimdUuidV4 &&other) = default;
   SimdUuidV4 &operator=(SimdUuidV4 &&other) = default;
 
@@ -34,20 +51,22 @@ public:
   // string.
   explicit operator std::string() const;
 
-  // Convert SimdUuidV4 to UUID V4 string and return the result in the provided
-  // string ref.
+  // Convert SimdUuidV4 to UUID V4 string and store the result in the provided
+  // string reference.
   void ToString(std::string &result) const;
 
-  // Create SimdUuidV4 from UUID V4 string.
+  // Create SimdUuidV4 from a UUID V4 string.
   // The UUID V4 string must be in uppercase.
   static std::optional<SimdUuidV4> FromString(std::string_view from);
 
+  // Equality operators
   bool operator==(const SimdUuidV4 &other) const {
     return high_ == other.high_ && low_ == other.low_;
   }
 
   bool operator!=(const SimdUuidV4 &other) const { return !(*this == other); }
 
+  // Compute hash value for SimdUuidV4
   size_t hash() const;
 
 private:
