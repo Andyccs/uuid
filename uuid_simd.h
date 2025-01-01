@@ -17,12 +17,10 @@ namespace andyccs {
 // XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 //
 // Each hexadecimal character represents 4 bits, resulting in a total of 32 * 4
-// = 128 bits. SimdUuidV4 stores these 128 bits as two 64-bit unsigned integers,
-// referred to as 'high' and 'low'.
+// = 128 bits.
 //
 // Example SimdUuidV4:
-// - high = 0xF448CB35C48445F2
-// - low  = 0xB7622A19E4E96ED2
+// - data = 0xF448CB35C48445F2B7622A19E4E96ED2
 // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
 //
 // Note: SimdUuidV4 is a simplified version of UUID V4 and does not comply with

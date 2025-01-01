@@ -54,6 +54,10 @@ FetchContent_MakeAvailable(googlebenchmark)
 
 #### Local libraries
 
+# benchmark utils library
+add_library(uuid_benchmark_utils uuid_benchmark_utils.h)
+set_target_properties(uuid_benchmark_utils PROPERTIES LINKER_LANGUAGE CXX)
+
 # add the uuid_basic library
 add_library(uuid_basic uuid_basic.h uuid_basic.cc)
 add_executable(uuid_basic_test uuid_basic_test.cc)
@@ -61,7 +65,7 @@ target_link_libraries(uuid_basic_test uuid_basic GTest::gtest_main andyccs_compi
 gtest_discover_tests(uuid_basic_test)
 
 add_executable(uuid_basic_benchmark_test uuid_basic_benchmark_test.cc)
-target_link_libraries(uuid_basic_benchmark_test uuid_basic benchmark::benchmark andyccs_compiler_flags)
+target_link_libraries(uuid_basic_benchmark_test uuid_basic uuid_benchmark_utils benchmark::benchmark andyccs_compiler_flags)
 
 # add the uuid_simd library
 add_library(uuid_simd uuid_simd.h uuid_simd.cc)
@@ -70,7 +74,7 @@ target_link_libraries(uuid_simd_test uuid_simd GTest::gtest_main andyccs_compile
 gtest_discover_tests(uuid_simd_test)
 
 add_executable(uuid_simd_benchmark_test uuid_simd_benchmark_test.cc)
-target_link_libraries(uuid_simd_benchmark_test uuid_simd benchmark::benchmark andyccs_compiler_flags)
+target_link_libraries(uuid_simd_benchmark_test uuid_simd uuid_benchmark_utils benchmark::benchmark andyccs_compiler_flags)
 
 # benchmark of other libraries
 FetchContent_Declare(
@@ -81,7 +85,7 @@ FetchContent_Declare(
 set(BOOST_INCLUDE_LIBRARIES uuid)
 FetchContent_MakeAvailable(Boost)
 add_executable(uuid_benchmark_test uuid_benchmark_test.cc)
-target_link_libraries(uuid_benchmark_test benchmark::benchmark Boost::uuid andyccs_compiler_flags)
+target_link_libraries(uuid_benchmark_test uuid_benchmark_utils benchmark::benchmark Boost::uuid andyccs_compiler_flags)
 
 #### Executable
 

@@ -6,24 +6,9 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <random>
 
+#include "uuid_benchmark_utils.h"
+
 namespace andyccs {
-
-namespace {
-
-// Generate random data each time to prevent the compiler from optimizing the
-// code to merely load and store constant values in the char array. This
-// ensures that the benchmark accurately measures the performance of the
-// to_chars function.
-template <typename T> void GenerateRandomData(T &data) {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<std::uint8_t> dis(0, 255);
-  for (auto &byte : data) {
-    byte = dis(gen);
-  }
-}
-
-} // namespace
 
 static void BM_BoostUuidV4FromString(benchmark::State &state) {
   std::uint8_t data[16];
@@ -35,6 +20,7 @@ static void BM_BoostUuidV4FromString(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(gen(from));
+      benchmark::ClobberMemory();
     }
   }
 }
@@ -47,6 +33,7 @@ static void BM_BoostUuidV4FromArrayData(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(boost::uuids::uuid(data));
+      benchmark::ClobberMemory();
     }
   }
 }
@@ -60,6 +47,7 @@ static void BM_BoostUuidV4ToString(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(boost::uuids::to_string(uuid));
+      benchmark::ClobberMemory();
     }
   }
 }
@@ -74,6 +62,7 @@ static void BM_BoostUuidV4ToChars(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(boost::uuids::to_chars<char, 37>(uuid, str));
+      benchmark::ClobberMemory();
     }
   }
 }
@@ -84,6 +73,7 @@ static void BM_BoostUuidV4GeneratorMt19937(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator());
+      benchmark::ClobberMemory();
     }
   }
 }
@@ -94,6 +84,7 @@ static void BM_BoostUuidV4GeneratorMt19937_64(benchmark::State &state) {
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator());
+      benchmark::ClobberMemory();
     }
   }
 }
