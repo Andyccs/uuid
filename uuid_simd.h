@@ -60,8 +60,19 @@ public:
   SimdUuidV4 &operator=(const SimdUuidV4 &other) = default;
 
   // Move constructor and assignment operator
-  SimdUuidV4(SimdUuidV4 &&other) = default;
-  SimdUuidV4 &operator=(SimdUuidV4 &&other) = default;
+  SimdUuidV4(SimdUuidV4 &&other) {
+    if (this != &other) {
+      data_ = std::move(other.data_);
+      other.data_ = {0};
+    }
+  }
+  SimdUuidV4 &operator=(SimdUuidV4 &&other) {
+    if (this != &other) {
+      data_ = std::move(other.data_);
+      other.data_ = {0};
+    }
+    return *this;
+  }
 
   // Convert SimdUuidV4 to UUID V4 string.
   // This function is marked explicit to prevent accidental conversion to

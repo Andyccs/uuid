@@ -121,6 +121,7 @@ rm -r build/
 ## TODO
 
 - Override stream operators
+- Override comparator operators
 - Benchmarking comparisons with other libraries
 - Thread safe generators
 - RFC 9562 Compliant

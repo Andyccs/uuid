@@ -15,6 +15,14 @@ TEST(BasicUuidV4, CreateHighLow) {
   EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
 }
 
+TEST(BasicUuidV4, FromData) {
+  std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid(data);
+  EXPECT_EQ(std::string(uuid), from);
+}
+
 TEST(BasicUuidV4, CreateConstExpr) {
   constexpr std::array<std::uint8_t, 16> data = {
       0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
@@ -23,19 +31,64 @@ TEST(BasicUuidV4, CreateConstExpr) {
   EXPECT_EQ(std::string(uuid), "6BBBB416-EDC3-405F-A86D-231D5800235E");
 }
 
+TEST(BasicUuidV4, Copy) {
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid_1(data);
+  BasicUuidV4 uuid_2(uuid_1);
+  EXPECT_EQ(uuid_1, uuid_2);
+
+  BasicUuidV4 uuid_3 = uuid_1;
+  EXPECT_EQ(uuid_1, uuid_3);
+}
+
+TEST(BasicUuidV4, Move) {
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid_1(data);
+  BasicUuidV4 uuid_2(std::move(uuid_1));
+  EXPECT_EQ(uuid_1, BasicUuidV4());
+  EXPECT_EQ(uuid_2, BasicUuidV4(data));
+
+  BasicUuidV4 uuid_3(data);
+  BasicUuidV4 uuid_4(data);
+  uuid_4 = std::move(uuid_3);
+  EXPECT_EQ(uuid_3, BasicUuidV4());
+  EXPECT_EQ(uuid_4, BasicUuidV4(data));
+}
+
+TEST(BasicUuidV4, StringOperator) {
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid(data);
+  EXPECT_EQ(std::string(uuid), "6BBBB416-EDC3-405F-A86D-231D5800235E");
+}
+
+TEST(BasicUuidV4, ToString) {
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid(data);
+
+  std::string result;
+  uuid.ToString(result);
+  EXPECT_EQ(result, "6BBBB416-EDC3-405F-A86D-231D5800235E");
+}
+
+TEST(BasicUuidV4, ToChars) {
+  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  BasicUuidV4 uuid(data);
+
+  char result[37];
+  uuid.ToChars(result);
+  EXPECT_EQ(std::string(result), "6BBBB416-EDC3-405F-A86D-231D5800235E");
+}
+
 TEST(BasicUuidV4, FromString) {
   std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
   std::optional<BasicUuidV4> uuid = BasicUuidV4::FromString(from);
   ASSERT_TRUE(uuid.has_value());
   EXPECT_EQ(std::string(*uuid), from);
-}
-
-TEST(BasicUuidV4, FromData) {
-  std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
-  std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
-                           0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
-  BasicUuidV4 uuid(data);
-  EXPECT_EQ(std::string(uuid), from);
 }
 
 TEST(BasicUuidV4, FromStringInvalidChar) {

@@ -55,8 +55,19 @@ public:
   BasicUuidV4 &operator=(const BasicUuidV4 &other) = default;
 
   // Move constructor and assignment operator
-  BasicUuidV4(BasicUuidV4 &&other) = default;
-  BasicUuidV4 &operator=(BasicUuidV4 &&other) = default;
+  BasicUuidV4(BasicUuidV4 &&other) {
+    if (this != &other) {
+      data_ = std::move(other.data_);
+      other.data_ = {0};
+    }
+  }
+  BasicUuidV4 &operator=(BasicUuidV4 &&other) {
+    if (this != &other) {
+      data_ = std::move(other.data_);
+      other.data_ = {0};
+    }
+    return *this;
+  }
 
   // Convert BasicUuidV4 to UUID V4 string.
   // This function is marked explicit to prevent accidental conversion to
