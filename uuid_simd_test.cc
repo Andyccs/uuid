@@ -10,6 +10,11 @@ TEST(SimdUuidV4, CreateDefault) {
   EXPECT_EQ(std::string(uuid), "00000000-0000-0000-0000-000000000000");
 }
 
+TEST(BasicUuidV4, CreateHighLow) {
+  SimdUuidV4 uuid = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+}
+
 TEST(SimdUuidV4, CreateConstExpr) {
   constexpr SimdUuidV4 uuid =
       SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
