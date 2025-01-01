@@ -46,35 +46,35 @@ Load Average: 0.10, 0.05, 0.01
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BasicUuidV4FromString/256                4934 ns         4765 ns       147121
-BM_BasicUuidV4FromArrayData/256              113 ns          111 ns      6283132
-BM_BasicUuidV4FromStdArrayData/256          50.4 ns         51.8 ns     13366355
-BM_BasicUuidV4ToString/256                  3504 ns         3599 ns       193746
-BM_BasicUuidV4ToStringPrealloc/256          1204 ns         1236 ns       567258
-BM_BasicUuidV4ToChars/256                   1070 ns         1099 ns       636219
-BM_BasicUuidV4GeneratorMt19937/256          2890 ns         3083 ns       225420
-BM_BasicUuidV4GeneratorMt19937_64/256        878 ns          936 ns       754271
+BM_BasicUuidV4FromString/256                4094 ns         4466 ns       157145
+BM_BasicUuidV4FromArrayData/256              106 ns          115 ns      5967487
+BM_BasicUuidV4FromStdArrayData/256          42.5 ns         46.3 ns     15070402
+BM_BasicUuidV4ToString/256                  3503 ns         3821 ns       186731
+BM_BasicUuidV4ToStringPrealloc/256          1143 ns         1247 ns       554947
+BM_BasicUuidV4ToChars/256                   1033 ns         1127 ns       624215
+BM_BasicUuidV4GeneratorMt19937/256          3022 ns         3107 ns       221444
+BM_BasicUuidV4GeneratorMt19937_64/256        941 ns          941 ns       741588
 
 -------------------------------------------------------------------------------
 Benchmark                                     Time             CPU   Iterations
 -------------------------------------------------------------------------------
-BM_SimdUuidV4FromString/256                 576 ns          593 ns      1165466
-BM_SimdUuidV4FromArrayData/256              152 ns          156 ns      4522420
-BM_SimdUuidV4ToString/256                  2319 ns         2387 ns       289077
-BM_SimdUuidV4ToStringPrealloc/256           399 ns          411 ns      1684737
-BM_SimdUuidV4ToChars/256                    343 ns          353 ns      1981980
-BM_SimdUuidV4GeneratorMt19937/256          2593 ns         2669 ns       262181
-BM_SimdUuidV4GeneratorMt19937_64/256        535 ns          551 ns      1277668
+BM_SimdUuidV4FromString/256                 625 ns          604 ns      1149484**
+BM_SimdUuidV4FromArrayData/256              154 ns          160 ns      4471783
+BM_SimdUuidV4ToString/256                  2346 ns         2428 ns       285870
+BM_SimdUuidV4ToStringPrealloc/256           443 ns          410 ns      1697578**
+BM_SimdUuidV4ToChars/256                    381 ns          352 ns      2008389**
+BM_SimdUuidV4GeneratorMt19937/256          2934 ns         2709 ns       258977
+BM_SimdUuidV4GeneratorMt19937_64/256        591 ns          546 ns      1275822**
 
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BoostUuidV4FromString/256               25671 ns        25447 ns        27283
-BM_BoostUuidV4FromArrayData/256             48.7 ns         50.0 ns     13909588
-BM_BoostUuidV4ToString/256                  1453 ns         1493 ns       463779
-BM_BoostUuidV4ToChars/256                    171 ns          176 ns      3981865
-BM_BoostUuidV4GeneratorMt19937/256          2331 ns         2415 ns       290862
-BM_BoostUuidV4GeneratorMt19937_64/256        978 ns         1013 ns       683980
+BM_BoostUuidV4FromString/256               22057 ns        22829 ns        29817
+BM_BoostUuidV4FromArrayData/256             48.9 ns         50.6 ns     14161607**
+BM_BoostUuidV4ToString/256                  2274 ns         2446 ns       281807**
+BM_BoostUuidV4ToChars/256                    838 ns          901 ns       791324
+BM_BoostUuidV4GeneratorMt19937/256          2090 ns         2248 ns       307998**
+BM_BoostUuidV4GeneratorMt19937_64/256        947 ns         1019 ns       694793
 ```
 
 # Development
