@@ -278,14 +278,16 @@ SimdUuidV4::SimdUuidV4(const std::uint8_t (&data)[16]) {
 }
 
 void SimdUuidV4::ToString(std::string &result) const {
-  result.resize(36);
+  if (result.size() != 36) {
+    result.resize(36);
+  }
 
   __m128i input = _mm_set_epi64x(high_, low_);
   m128itos(input, result.data());
 }
 
 SimdUuidV4::operator std::string() const {
-  std::string result;
+  std::string result(36, char());
   ToString(result);
   return result;
 }
