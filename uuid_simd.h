@@ -42,7 +42,6 @@ public:
   // - low  = 0xB7622A19E4E96ED2
   // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
   constexpr SimdUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
-  SimdUuidV4(const std::uint8_t (&data)[16]);
 
   // Construct BasicUuidV4 from a 16-byte array. Example:
   // - data = {
