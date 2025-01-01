@@ -70,6 +70,10 @@ public:
   // string reference.
   void ToString(std::string &result) const;
 
+  // Convert BasicUuidV4 to UUID V4 string and store the result in the provided
+  // buffer.
+  void ToChars(char (&buffer)[37]) const;
+
   // Create SimdUuidV4 from a UUID V4 string.
   // The UUID V4 string must be in uppercase.
   static std::optional<SimdUuidV4> FromString(std::string_view from);

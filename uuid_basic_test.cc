@@ -20,7 +20,7 @@ TEST(BasicUuidV4, CreateConstExpr) {
       0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
       0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
   constexpr BasicUuidV4 uuid(data);
-  EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+  EXPECT_EQ(std::string(uuid), "6BBBB416-EDC3-405F-A86D-231D5800235E");
 }
 
 TEST(BasicUuidV4, FromString) {

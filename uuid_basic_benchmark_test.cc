@@ -63,6 +63,18 @@ static void BM_BasicUuidV4ToStringPrealloc(benchmark::State &state) {
 }
 BENCHMARK(BM_BasicUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
 
+static void BM_BasicUuidV4ToChars(benchmark::State &state) {
+  BasicUuidV4 uuid(8507, 9486);
+  char result[37];
+  for (auto _ : state) {
+    for (int i = 0; i < state.range(0); ++i) {
+      uuid.ToChars(result);
+      benchmark::DoNotOptimize(result);
+    }
+  }
+}
+BENCHMARK(BM_BasicUuidV4ToChars)->Range(1 << 8, 1 << 8);
+
 static void BM_BasicUuidV4GeneratorMt19937(benchmark::State &state) {
   BasicUuidV4Generator<std::mt19937> generator;
   for (auto _ : state) {

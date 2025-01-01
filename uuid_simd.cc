@@ -268,6 +268,11 @@ uint64_t convert_to_uint64(const uint8_t *array) {
   return result;
 }
 
+inline void ToCharsInternal(uint64_t high, uint64_t low, char *buffer) {
+  __m128i input = _mm_set_epi64x(high, low);
+  m128itos(input, buffer);
+}
+
 } // namespace
 
 static constexpr char kHexMap[] = {"0123456789ABCDEF"};
@@ -281,15 +286,18 @@ void SimdUuidV4::ToString(std::string &result) const {
   if (result.size() != 36) {
     result.resize(36);
   }
-
-  __m128i input = _mm_set_epi64x(high_, low_);
-  m128itos(input, result.data());
+  ToCharsInternal(high_, low_, result.data());
 }
 
 SimdUuidV4::operator std::string() const {
   std::string result(36, char());
-  ToString(result);
+  ToCharsInternal(high_, low_, result.data());
   return result;
+}
+
+void SimdUuidV4::ToChars(char (&buffer)[37]) const {
+  ToCharsInternal(high_, low_, buffer);
+  buffer[36] = '\0';
 }
 
 std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {

@@ -43,7 +43,7 @@ static void BM_BoostUuidV4ToString(benchmark::State &state) {
 }
 BENCHMARK(BM_BoostUuidV4ToString)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4ToStringPrealloc(benchmark::State &state) {
+static void BM_BoostUuidV4ToChars(benchmark::State &state) {
   std::uint8_t data[16] = {0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
                            0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
   boost::uuids::uuid uuid(data);
@@ -55,7 +55,7 @@ static void BM_BoostUuidV4ToStringPrealloc(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidV4ToChars)->Range(1 << 8, 1 << 8);
 
 static void BM_BoostUuidV4GeneratorMt19937(benchmark::State &state) {
   boost::uuids::basic_random_generator<std::mt19937> generator;

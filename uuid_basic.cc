@@ -36,9 +36,22 @@ inline bool ConvertStringRangeToBytes(std::string_view from, size_t start,
   return true;
 }
 
-} // namespace
+inline void ToCharsInternal(const std::array<std::uint8_t, 16> &data,
+                            char *out) {
+  constexpr char const *kHexMap = "0123456789ABCDEF-";
+  for (std::size_t i = 0; i < 16; ++i) {
+    std::uint8_t ch = data[i];
 
-static constexpr char kHexMap[] = {"0123456789ABCDEF"};
+    *out++ = kHexMap[ch >> 4];
+    *out++ = kHexMap[ch & 0x0F];
+
+    if (i == 3 || i == 5 || i == 7 || i == 9) {
+      *out++ = kHexMap[16];
+    }
+  }
+}
+
+} // namespace
 
 BasicUuidV4::BasicUuidV4(uint64_t high, uint64_t low) {
   uint64_to_bytes(high, data_.data());
@@ -50,44 +63,15 @@ BasicUuidV4::BasicUuidV4(const std::uint8_t (&data)[16]) {
 }
 
 void BasicUuidV4::ToString(std::string &result) const {
-  result.resize(36);
-  result[0] = kHexMap[data_[0] >> 4];
-  result[1] = kHexMap[data_[0] & 0xF];
-  result[2] = kHexMap[data_[1] >> 4];
-  result[3] = kHexMap[data_[1] & 0xF];
-  result[4] = kHexMap[data_[2] >> 4];
-  result[5] = kHexMap[data_[2] & 0xF];
-  result[6] = kHexMap[data_[3] >> 4];
-  result[7] = kHexMap[data_[3] & 0xF];
-  result[8] = '-';
-  result[9] = kHexMap[data_[4] >> 4];
-  result[10] = kHexMap[data_[4] & 0xF];
-  result[11] = kHexMap[data_[5] >> 4];
-  result[12] = kHexMap[data_[5] & 0xF];
-  result[13] = '-';
-  result[14] = kHexMap[data_[6] >> 4];
-  result[15] = kHexMap[data_[6] & 0xF];
-  result[16] = kHexMap[data_[7] >> 4];
-  result[17] = kHexMap[data_[7] & 0xF];
-  result[18] = '-';
+  if (result.size() != 36) {
+    result.resize(36);
+  }
+  ToCharsInternal(data_, result.data());
+}
 
-  result[19] = kHexMap[data_[8] >> 4];
-  result[20] = kHexMap[data_[8] & 0xF];
-  result[21] = kHexMap[data_[9] >> 4];
-  result[22] = kHexMap[data_[9] & 0xF];
-  result[23] = '-';
-  result[24] = kHexMap[data_[10] >> 4];
-  result[25] = kHexMap[data_[10] & 0xF];
-  result[26] = kHexMap[data_[11] >> 4];
-  result[27] = kHexMap[data_[11] & 0xF];
-  result[28] = kHexMap[data_[12] >> 4];
-  result[29] = kHexMap[data_[12] & 0xF];
-  result[30] = kHexMap[data_[13] >> 4];
-  result[31] = kHexMap[data_[13] & 0xF];
-  result[32] = kHexMap[data_[14] >> 4];
-  result[33] = kHexMap[data_[14] & 0xF];
-  result[34] = kHexMap[data_[15] >> 4];
-  result[35] = kHexMap[data_[15] & 0xF];
+void BasicUuidV4::ToChars(char (&buffer)[37]) const {
+  ToCharsInternal(data_, buffer);
+  buffer[36] = '\0';
 }
 
 BasicUuidV4::operator std::string() const {
