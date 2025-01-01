@@ -1,5 +1,6 @@
 #include "uuid_simd.h"
 
+#include <cstdint>
 #include <immintrin.h>
 #include <optional>
 #include <smmintrin.h>
@@ -24,25 +25,12 @@ inline __m256i reverse_m256i(__m256i a) {
 
 // Converts a 128-bits unsigned int to an UUIDv4 string representation.
 // Uses SIMD via Intel's AVX2 instruction set.
-inline void m128itos(__m128i input128, char *mem,
+inline void m256itos(__m256i input256, char *mem,
                      bool enable_pretty_shuffle = true) {
-  // Expand each byte in x to two bytes in res
-  // i.e. 0x12345678 -> 0x0102030405060708
-  // Then translate each byte to its hex ascii representation
-  // i.e. 0x0102030405060708 -> 0x3132333435363738
-
-  // Casts the 128-bit integer vector x to a 256-bit integer vector a. This is
-  // necessary for subsequent 256-bit SIMD operations.
-  // Suppose
-  // x = FEDCBA9 876543210 AAAAAAAA AAAAAAAA
-  // Then
-  // a = 00000000 00000000 00000000 00000000 FEDCBA9 876543210 AAAAAAAA AAAAAAAA
-  __m256i input256 = _mm256_castsi128_si256(input128);
-
   // Shifts the 64-bit integers within a to the right by 4 bits. This
   // effectively separates the upper and lower nibbles (4 bits) of each byte.
   // Suppose
-  // a = 00000000 00000000 00000000 00000000 FEDCBA98 76543210 AAAAAAAA AAAAAAAA
+  // a = 00000000 00000000 00000000 00000000 FEDCBA9 876543210 AAAAAAAA AAAAAAAA
   // Then
   // s = 00000000 00000000 00000000 00000000 0FEDCBA9 87654321 0AAAAAAA AAAAAAAA
   __m256i input256_shift_right = _mm256_srli_epi64(input256, 4);
@@ -182,7 +170,7 @@ inline __m256i CreatePrettyInput(const char *mem) {
 
 // Converts an UUIDv4 string representation to a 128-bits unsigned int.
 // Uses SIMD via Intel's AVX2 instruction set.
-inline __m128i stom128i(__m256i pretty_input) {
+inline std::tuple<uint64_t, uint64_t> stom128i(__m256i pretty_input) {
   // Build a mask to apply a different offset to alphas and digits
   const __m256i sub = _mm256_set1_epi8(0x30);
 
@@ -232,32 +220,19 @@ inline __m128i stom128i(__m256i pretty_input) {
       _mm256_or_si256(spaced_result, _mm256_srli_epi16(spaced_result, 4)),
       mask_2);
 
-  // spaced_result_right: Only get the value from the 'left' for every 32 bits
-  // 00000099 000000BB 000000DD 000000FF 000000DC 00000098 00000054 00000010
-  const __m256i mask_3 = _mm256_set1_epi32(0x000000FF);
-  __m256i spaced_result_right =
-      _mm256_and_si256(spaced_result_intermediate, mask_3);
-
-  // spaced_result_right: Only get the value from the 'right' for every 32 bits
-  // 88000000 AA000000 CC000000 EE000000 FE000000 BA000000 76000000 32000000
-  const __m256i mask_4 = _mm256_set1_epi32(0xFF000000);
-  __m256i spaced_result_left = _mm256_and_si256(
-      _mm256_slli_epi32(spaced_result_intermediate, 8), mask_4);
-
-  // spaced_result_2: Now there are 0x0000 spaces in between.
-  // 88000099 AA0000BB CC0000DD EE0000FF FE0000DC BA000098 76000054 32000010
-  __m256i spaced_result_2 =
-      _mm256_or_si256(spaced_result_left, spaced_result_right);
-
-  // hadd_result: Perform a horizontal add
-  // 00000000 00000000 8899AABB CCDDEEFF 00000000 00000000 FEDCBA98 76543210
-  __m256i hadd_result =
-      _mm256_hadd_epi16(spaced_result_2, _mm256_setzero_si256());
+  // final_result: Packed the result in the lower 64 bits
+  // high = 00000000 00000000 FEDCBA98 76543210
+  // low  = 00000000 00000000 8899AABB CCDDEEFF
+  const __m128i shuffle =
+      _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1, -1, -1, -1, -1, -1, -1);
+  __m128i high = _mm_shuffle_epi8(
+      _mm256_extracti128_si256(spaced_result_intermediate, 0), shuffle);
+  __m128i low = _mm_shuffle_epi8(
+      _mm256_extracti128_si256(spaced_result_intermediate, 1), shuffle);
 
   // high = FEDCBA98 76543210
   // low = 8899AABB CCDDEEFF
-  return _mm_set_epi64x(_mm256_extract_epi64(hadd_result, 0),
-                        _mm256_extract_epi64(hadd_result, 2));
+  return {_mm_extract_epi64(high, 0), _mm_extract_epi64(low, 0)};
 }
 
 uint64_t convert_to_uint64(const uint8_t *array) {
@@ -269,8 +244,8 @@ uint64_t convert_to_uint64(const uint8_t *array) {
 }
 
 inline void ToCharsInternal(uint64_t high, uint64_t low, char *buffer) {
-  __m128i input = _mm_set_epi64x(high, low);
-  m128itos(input, buffer);
+  __m256i input = _mm256_set_epi64x(0, 0, high, low);
+  m256itos(input, buffer);
 }
 
 } // namespace
@@ -313,10 +288,7 @@ std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
   if (!ValidateInput(pretty_input)) {
     return std::nullopt;
   }
-  __m128i input128 = stom128i(pretty_input);
-  uint64_t high = _mm_extract_epi64(input128, 1);
-  uint64_t low = _mm_extract_epi64(input128, 0);
-
+  auto [high, low] = stom128i(pretty_input);
   return SimdUuidV4(high, low);
 }
 

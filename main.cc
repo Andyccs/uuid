@@ -21,6 +21,23 @@ uint64_t convert_to_uint64(const uint8_t *array) {
   return result;
 }
 
+void print128_num(__m128i var, std::string_view description) {
+  uint16_t val[8];
+  memcpy(val, &var, sizeof(val));
+  printf("%s:\t%04X%04X %04X%04X %04X%04X %04X%04X \n", description.data(),
+         val[7], val[6], val[5], val[4], val[3], val[2], val[1], val[0]);
+}
+
+void print256_num(__m256i var, std::string_view description) {
+  uint16_t val[16];
+  memcpy(val, &var, sizeof(val));
+  printf("%s:\t%04X%04X %04X%04X %04X%04X %04X%04X %04X%04X %04X%04X %04X%04X "
+         "%04X%04X \n",
+         description.data(), val[15], val[14], val[13], val[12], val[11],
+         val[10], val[9], val[8], val[7], val[6], val[5], val[4], val[3],
+         val[2], val[1], val[0]);
+}
+
 int main() {
   // Generate a random BasicUuidV4
   andyccs::BasicUuidV4Generator<std::mt19937_64> generator_1;
