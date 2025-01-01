@@ -75,7 +75,9 @@ void BasicUuidV4::ToChars(char (&buffer)[37]) const {
 }
 
 BasicUuidV4::operator std::string() const {
-  std::string result(36, char());
+  constexpr std::string_view kDefaultString =
+      "012345678901234567890123456789012345";
+  std::string result(kDefaultString);
   ToCharsInternal(data_, result.data());
   return result;
 }

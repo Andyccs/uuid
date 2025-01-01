@@ -8,55 +8,41 @@
 namespace andyccs {
 namespace {
 
-inline __m256i reverse_m256i(__m256i a) {
-  // Create a shuffle mask to reverse each 128-bit lane
-  const __m256i shuffleMask =
-      _mm256_set_epi8(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0,
-                      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
-
-  // Shuffle the bytes within each lane
-  a = _mm256_shuffle_epi8(a, shuffleMask);
-
-  // Permute the 128-bit lanes
-  a = _mm256_permute2x128_si256(a, a, 1);
-
-  return a;
-}
-
 // Converts a 128-bits unsigned int to an UUIDv4 string representation.
 // Uses SIMD via Intel's AVX2 instruction set.
-inline void m256itos(__m256i input256, char *mem,
-                     bool enable_pretty_shuffle = true) {
+inline void m256itos(__m256i input256, char *mem) {
+  // Real world input 0xFEDCBA98 76543210 8899AABB CCDDEEFF
+
   // Shifts the 64-bit integers within a to the right by 4 bits. This
   // effectively separates the upper and lower nibbles (4 bits) of each byte.
   // Suppose
-  // a = 00000000 00000000 00000000 00000000 FEDCBA9 876543210 AAAAAAAA AAAAAAAA
+  // i = 00000000 00000000 00000000 00000000 FFEEDDCC BBAA9988 10325476 98BADCFE
   // Then
-  // s = 00000000 00000000 00000000 00000000 0FEDCBA9 87654321 0AAAAAAA AAAAAAAA
+  // s = 0FFEEDDC CBBAA998 01032547 698BADCF 0FFEEDDC CBBAA998 01032547 698BADCF
   __m256i input256_shift_right = _mm256_srli_epi64(input256, 4);
 
   // Suppose
-  // s = 00000000 00000000 00000000 00000000 0FEDCBA9 87654321 0AAAAAAA AAAAAAAA
-  // a = 00000000 00000000 00000000 00000000 FEDCBA98 76543210 AAAAAAAA AAAAAAAA
+  // i = 00000000 00000000 00000000 00000000 FFEEDDCC BBAA9988 10325476 98BADCFE
+  // s = 0FFEEDDC CBBAA998 01032547 698BADCF 0FFEEDDC CBBAA998 01032547 698BADCF
   // Then
-  // l = 00000000 00000000 00000000 00000000 AA0AAAAA AAAAAAAA AAAAAAAA AAAAAAAA
-  // h = 00000000 00000000 00000000 00000000 FE0FDCED BACB98A9 76875465 32431021
+  // l = 10013203 54257647 9869BA8B DCADFECF 10013203 54257647 9869BA8B DCADFECF
+  // h = 00000000 00000000 00000000 00000000 FF0FEEFE DDEDCCDC BBCBAABA 99A98898
   __m256i low = _mm256_unpacklo_epi8(input256_shift_right, input256);
   __m128i high = _mm256_castsi256_si128(
       _mm256_unpackhi_epi8(input256_shift_right, input256));
 
-  // c = FE0FDCED BACB98A9 76875465 32431021 AA0AAAAA AAAAAAAA AAAAAAAA AAAAAAAA
+  // c = FF0FEEFE DDEDCCDC BBCBAABA 99A98898 10013203 54257647 9869BA8B DCADFECF
   __m256i combine = _mm256_inserti128_si256(low, high, 1);
 
   // mask: bitmask to extract the lower 4 bits of each byte.
   // 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F
   const __m256i mask = _mm256_set1_epi8(0x0F);
 
-  // c = FE0FDCED BACB98A9 76875465 32431021 AA0AAAAA AAAAAAAA AAAAAAAA AAAAAAAA
+  // c = FF0FEEFE DDEDCCDC BBCBAABA 99A98898 10013203 54257647 9869BA8B DCADFECF
   //     0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F 0F0F0F0F
-  // d = 0E0F0C0D 0A0B0809 06070405 02030001 0A0A0A0A 0A0A0A0A 0A0A0A0A 0A0A0A0A
+  // d = 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
   // Notice that all data is in each bytes:
-  // EFCD AB89 6745 2301 AA AA AA AA AA AA AA AA
+  // FFEE DDCC BBAA 9988 0123 456 78AB CDEF
   __m256i data = _mm256_and_si256(combine, mask);
 
   // add: will be used to offset the ASCII values of digits
@@ -71,53 +57,50 @@ inline void m256itos(__m256i input256, char *mem,
   // Note that 'A' - 0x0A == 0x37
   const __m256i alpha_offset = _mm256_set1_epi8(0x37);
 
-  // d = 0E0F0C0D 0A0B0809 06070405 02030001 0A0A0A0A 0A0A0A0A 0A0A0A0A 0A0A0A0A
+  // d = 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
   // ADD 06060606 06060606 06060606 06060606 06060606 06060606 06060606 06060606
   // AND 10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101010
   // SHIFT LEFT 3 bits every 64 bits, so that the most significant bit can tell
   // whether a nibble is alpha (bit 1) or digit (bit 0).
-  //     80808080 80800000 00000000 00000000 80808080 80808080 80808080 80808080
+  //     80808080 80808080 80808080 00000000 00000000 00000000 00008080 80808080
   __m256i alpha = _mm256_slli_epi64(
       _mm256_and_si256(_mm256_add_epi8(data, add), alpha_mask), 3);
 
   // Choose 0x30 (ASCII code for '0')
   // or 0x57  (ASCII code for 'A' - 0x10)
-  //     57575757 57573030 30303030 30303030 57575757 57575757 57575757 57575757
+  //     37373737 37373737 37373737 30303030 30303030 30303030 30303737 37373737
   __m256i offset =
       _mm256_blendv_epi8(_mm256_slli_epi64(add, 3), alpha_offset, alpha);
 
   // Now you get the ASCII index for each nibble.
-  // d = 0E0F0C0D 0A0B0809 06070405 02030001 0A0A0A0A 0A0A0A0A 0A0A0A0A 0A0A0A0A
-  //     37373737 37373030 30303030 30303030 37373737 37373737 37373737 37373737
-  // r = 45464344 41423839 36373435 32333031 41414141 41414141 41414141 41414141
-  // "EFCDAB89 67452301 AAAAAAAA AAAAAAAA"
+  // d = 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
+  //     37373737 37373737 37373737 30303030 30303030 30303030 30303737 37373737
+  // r = 46464545 44444343 42424141 39393838 30313233 34353637 38394142 43444546
+  // "FFEE DDCC BBAA 9988 0123 4567 89AB CDEF"
   __m256i res = _mm256_add_epi8(data, offset);
 
-  // "EFCDAB89 67452301 AAAAAAAA AAAAAAAA" is not really in the original input
-  // sequence. pretty_shuffle is trying to fix that.
-  const __m256i pretty_shuffle =
-      _mm256_set_epi32(0x0e0f0c0d, 0x0a0b0809, 0x06070405, 0x02030001,
-                       0x0e0f0c0d, 0x0a0b0809, 0x06070405, 0x02030001);
-  __m256i res_pretty =
-      enable_pretty_shuffle
-          ? reverse_m256i(_mm256_shuffle_epi8(res, pretty_shuffle))
-          : res;
-
-  // Add dashes between blocks as specified in RFC-4122
-  // 8-4-4-4-12
+  // Add dashes between blocks so that the string is formatted as 8-4-4-4-12
+  // 44444343 42424141 00393938 38000000 32330034 35363700 38394142 43444546
   const __m256i dash_shuffle =
       _mm256_set_epi32(0x0b0a0908, 0x07060504, 0x80030201, 0x00808080,
                        0x0d0c800b, 0x0a090880, 0x07060504, 0x03020100);
-  __m256i resd = _mm256_shuffle_epi8(res_pretty, dash_shuffle);
+  __m256i resd = _mm256_shuffle_epi8(res, dash_shuffle);
 
+  // 44444343 42424141 2D393938 382D0000 32332D34 3536372D 38394142 43444546
+  // ^                                                                     ^
+  // bit index 255                                               bit index 0
+  // "FFEE"   "DDCC"   "BBAA"   "9988"   "0123"   "4567"   "89AB"   "CDEF"
   const __m256i dash =
       _mm256_set_epi64x(0x0000000000000000ull, 0x2d000000002d0000ull,
                         0x00002d000000002d, 0x0000000000000000ull);
   resd = _mm256_or_si256(resd, dash);
 
+  // Reminder that the real world input is 0xFEDCBA98 76543210 8899AABB CCDDEEFF
+  // By copying from bit index 0 to index 255, we get the correct string.
+
   _mm256_storeu_si256((__m256i *)mem, resd);
-  *(uint16_t *)(mem + 16) = _mm256_extract_epi16(res_pretty, 7);
-  *(uint32_t *)(mem + 32) = _mm256_extract_epi32(res_pretty, 7);
+  *(uint16_t *)(mem + 16) = _mm256_extract_epi16(res, 7);
+  *(uint32_t *)(mem + 32) = _mm256_extract_epi32(res, 7);
 
   // Alternative implementation:
   //   *(uint64_t *)(mem) = _mm256_extract_epi64(res, 0);
@@ -148,29 +131,26 @@ ValidateInput(__m256i pretty_input) { // Create a mask of valid bytes
   return _mm256_testc_si256(result, one);
 }
 
-inline __m256i CreatePrettyInput(const char *mem) {
+inline __m256i CreateInput(const char *mem) {
   // Remove dashes and pack hex ascii bytes in a 256-bits int
   const __m256i dash_shuffle =
       _mm256_set_epi32(0x80808080, 0x0f0e0d0c, 0x0b0a0908, 0x06050403,
                        0x80800f0e, 0x0c0b0a09, 0x07060504, 0x03020100);
 
   // input: "FEDCBA98-7654-3210-8899-AABBCCDDEEFF"
+  // 46464545 44444343 42424141 39393838 30313233 34353637 38394142 43444546
   __m256i input = _mm256_loadu_si256((__m256i *)mem);
   input = _mm256_shuffle_epi8(input, dash_shuffle);
   input = _mm256_insert_epi16(input, *(uint16_t *)(mem + 16), 7);
   input = _mm256_insert_epi32(input, *(uint32_t *)(mem + 32), 7);
-
-  // input: After pretty shuffle.
-  // 38383939 41414242 43434444 45454646 46454443 42413938 37363534 33323130
-  const __m256i pretty_shuffle =
-      _mm256_set_epi32(0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f,
-                       0x00010203, 0x04050607, 0x08090a0b, 0x0c0d0e0f);
-  return _mm256_shuffle_epi8(input, pretty_shuffle);
+  return input;
 }
 
 // Converts an UUIDv4 string representation to a 128-bits unsigned int.
 // Uses SIMD via Intel's AVX2 instruction set.
-inline std::tuple<uint64_t, uint64_t> stom128i(__m256i pretty_input) {
+inline __m128i stom128i(__m256i pretty_input) {
+  // input: "FEDCBA98-7654-3210-8899-AABBCCDDEEFF"
+
   // Build a mask to apply a different offset to alphas and digits
   const __m256i sub = _mm256_set1_epi8(0x30);
 
@@ -197,30 +177,38 @@ inline std::tuple<uint64_t, uint64_t> stom128i(__m256i pretty_input) {
   // 0x80 means alpha
   // 0x00 means digit
   //
-  // 16161515 14141313 12121111 09090808 00010203 04050607 08091112 13141516
+  // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
   // 10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101010 AND
   // SHIFT LEFT 3
   // 00000000 80808080 80808080 80808080 80808080 80800000 00000000 00000000
   __m256i alpha = _mm256_slli_epi64(_mm256_and_si256(a, mask), 3);
 
   // sub_mask: Subtraction mask. What should be subtracted from each byte.
-  // 00000000 07070707 07070707 07070707 07070707 07070000 00000000 00000000
+  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
   __m256i sub_mask = _mm256_blendv_epi8(digits_offset, alpha_offset, alpha);
 
   // spaced_result: Almost the result, but there is a 0x0 space in between
   // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
-  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F SUB
+  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
   // 08080909 0A0A0B0B 0C0C0D0D 0E0E0F0F 0F0E0D0C 0B0A0908 07060504 03020100
   __m256i spaced_result = _mm256_sub_epi8(a, sub_mask);
+
+  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
+  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 01000302 05040706 09080B0A 0D0C0F0E
+  const __m256i pretty_shuffle =
+      _mm256_set_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1, 14,
+                      15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1);
+  __m256i pretty_result = _mm256_shuffle_epi8(spaced_result, pretty_shuffle);
 
   // spaced_result_intermediate: Trying to remove the 0x0 space.
   // 00880099 00AA00BB 00CC00DD 00EE00FF 00FE00DC 00BA0098 00760054 00320010
   const __m256i mask_2 = _mm256_set1_epi16(0x00FF);
   __m256i spaced_result_intermediate = _mm256_and_si256(
-      _mm256_or_si256(spaced_result, _mm256_srli_epi16(spaced_result, 4)),
+      _mm256_or_si256(pretty_result, _mm256_srli_epi16(pretty_result, 4)),
       mask_2);
 
   // final_result: Packed the result in the lower 64 bits
+  // input: "FEDCBA98-7654-3210-8899-AABBCCDDEEFF"
   // high = 00000000 00000000 FEDCBA98 76543210
   // low  = 00000000 00000000 8899AABB CCDDEEFF
   const __m128i shuffle =
@@ -232,19 +220,20 @@ inline std::tuple<uint64_t, uint64_t> stom128i(__m256i pretty_input) {
 
   // high = FEDCBA98 76543210
   // low = 8899AABB CCDDEEFF
-  return {_mm_extract_epi64(high, 0), _mm_extract_epi64(low, 0)};
+  // FFEEDDCC BBAA9988 10325476 98BADCFE
+  // ^               ^ ^               ^
+  // lend       lstart hend       hstart
+  return _mm_set_epi64x(_mm_extract_epi64(low, 0), _mm_extract_epi64(high, 0));
 }
 
-uint64_t convert_to_uint64(const uint8_t *array) {
-  uint64_t result = 0;
+inline void uint64_to_bytes(uint64_t value, uint8_t *array) {
   for (int i = 0; i < 8; ++i) {
-    result |= (uint64_t)array[i] << (8 * (7 - i));
+    array[i] = (value >> (8 * (7 - i))) & 0xFF;
   }
-  return result;
 }
 
-inline void ToCharsInternal(uint64_t high, uint64_t low, char *buffer) {
-  __m256i input = _mm256_set_epi64x(0, 0, high, low);
+inline void ToCharsInternal(uint8_t const *data, char *buffer) {
+  __m256i input = _mm256_loadu_si256((__m256i *)data);
   m256itos(input, buffer);
 }
 
@@ -252,26 +241,32 @@ inline void ToCharsInternal(uint64_t high, uint64_t low, char *buffer) {
 
 static constexpr char kHexMap[] = {"0123456789ABCDEF"};
 
+SimdUuidV4::SimdUuidV4(uint64_t high, uint64_t low) {
+  uint64_to_bytes(high, data_.data());
+  uint64_to_bytes(low, data_.data() + 8);
+}
+
 SimdUuidV4::SimdUuidV4(const std::uint8_t (&data)[16]) {
-  high_ = convert_to_uint64(data);
-  low_ = convert_to_uint64(&data[8]);
+  std::copy(data, data + 16, data_.begin());
 }
 
 void SimdUuidV4::ToString(std::string &result) const {
   if (result.size() != 36) {
     result.resize(36);
   }
-  ToCharsInternal(high_, low_, result.data());
+  ToCharsInternal(data_.data(), result.data());
 }
 
 SimdUuidV4::operator std::string() const {
-  std::string result(36, char());
-  ToCharsInternal(high_, low_, result.data());
+  constexpr std::string_view kDefaultString =
+      "012345678901234567890123456789012345";
+  std::string result(kDefaultString);
+  ToCharsInternal(data_.data(), result.data());
   return result;
 }
 
 void SimdUuidV4::ToChars(char (&buffer)[37]) const {
-  ToCharsInternal(high_, low_, buffer);
+  ToCharsInternal(data_.data(), buffer);
   buffer[36] = '\0';
 }
 
@@ -284,16 +279,20 @@ std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
     return std::nullopt;
   }
 
-  __m256i pretty_input = CreatePrettyInput(from.data());
+  __m256i pretty_input = CreateInput(from.data());
   if (!ValidateInput(pretty_input)) {
     return std::nullopt;
   }
-  auto [high, low] = stom128i(pretty_input);
-  return SimdUuidV4(high, low);
+  __m128i result_i = stom128i(pretty_input);
+  std::array<uint8_t, 16> result;
+  _mm_storeu_si128((__m128i *)result.data(), result_i);
+  return SimdUuidV4(result);
 }
 
 size_t SimdUuidV4::hash() const {
-  return high_ ^ (low_ + 0x9e3779b9 + (high_ << 6) + (high_ >> 2));
+  std::string result;
+  ToString(result);
+  return std::hash<std::string>()(std::move(result));
 }
 
 } // namespace andyccs

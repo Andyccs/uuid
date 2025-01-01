@@ -48,8 +48,8 @@ Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
 BM_BasicUuidV4FromString/256                4784 ns         4915 ns       142807
 BM_BasicUuidV4FromArrayData/256              113 ns          116 ns      6047349
-BM_BasicUuidV4FromStdArrayData/256          44.8 ns         46.1 ns     15267399
-BM_BasicUuidV4ToString/256                  2881 ns         2960 ns       235077
+BM_BasicUuidV4FromStdArrayData/256          44.8 ns         46.1 ns     15267399**
+BM_BasicUuidV4ToString/256                  2791 ns         2847 ns       243260
 BM_BasicUuidV4ToStringPrealloc/256          1191 ns         1220 ns       570493
 BM_BasicUuidV4ToChars/256                   1080 ns         1107 ns       630965
 BM_BasicUuidV4GeneratorMt19937/256          3077 ns         3153 ns       223853
@@ -58,13 +58,14 @@ BM_BasicUuidV4GeneratorMt19937_64/256        923 ns          946 ns       728672
 -------------------------------------------------------------------------------
 Benchmark                                     Time             CPU   Iterations
 -------------------------------------------------------------------------------
-BM_SimdUuidV4FromString/256                 575 ns          602 ns      1176983**
-BM_SimdUuidV4FromArrayData/256              150 ns          157 ns      4350858
-BM_SimdUuidV4ToString/256                  2240 ns         2344 ns       298529**
-BM_SimdUuidV4ToStringPrealloc/256           391 ns          409 ns      1732341**
-BM_SimdUuidV4ToChars/256                    352 ns          369 ns      1902424**
-BM_SimdUuidV4GeneratorMt19937/256          2572 ns         2692 ns       260261
-BM_SimdUuidV4GeneratorMt19937_64/256        521 ns          545 ns      1302939**
+BM_SimdUuidV4FromString/256                 573 ns          583 ns      1182113**
+BM_SimdUuidV4FromArrayData/256              110 ns          112 ns      6347128
+BM_SimdUuidV4FromStdArrayData/256          84.7 ns         86.3 ns      8285210
+BM_SimdUuidV4ToString/256                  1808 ns         1854 ns       378505**
+BM_SimdUuidV4ToStringPrealloc/256           371 ns          381 ns      1784369**
+BM_SimdUuidV4ToChars/256                    298 ns          305 ns      2289882**
+BM_SimdUuidV4GeneratorMt19937/256          3139 ns         3219 ns       213085
+BM_SimdUuidV4GeneratorMt19937_64/256        910 ns          933 ns       762352**
 
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
@@ -122,3 +123,7 @@ rm -r build/
 - Override stream operators
 - Benchmarking comparisons with other libraries
 - Thread safe generators
+- RFC 9562 Compliant
+- Other UUID version
+- Easy adoption by other project
+- Portable class and method

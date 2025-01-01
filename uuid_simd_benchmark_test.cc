@@ -48,6 +48,18 @@ static void BM_SimdUuidV4FromArrayData(benchmark::State &state) {
 }
 BENCHMARK(BM_SimdUuidV4FromArrayData)->Range(1 << 8, 1 << 8);
 
+static void BM_SimdUuidV4FromStdArrayData(benchmark::State &state) {
+  std::array<std::uint8_t, 16> data;
+  GenerateRandomData(data);
+
+  for (auto _ : state) {
+    for (int i = 0; i < state.range(0); ++i) {
+      benchmark::DoNotOptimize(SimdUuidV4(data));
+    }
+  }
+}
+BENCHMARK(BM_SimdUuidV4FromStdArrayData)->Range(1 << 8, 1 << 8);
+
 static void BM_SimdUuidV4ToString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);

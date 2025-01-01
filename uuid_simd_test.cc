@@ -10,15 +10,17 @@ TEST(SimdUuidV4, CreateDefault) {
   EXPECT_EQ(std::string(uuid), "00000000-0000-0000-0000-000000000000");
 }
 
-TEST(BasicUuidV4, CreateHighLow) {
+TEST(SimdUuidV4, CreateHighLow) {
   SimdUuidV4 uuid = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
   EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
 }
 
 TEST(SimdUuidV4, CreateConstExpr) {
-  constexpr SimdUuidV4 uuid =
-      SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
-  EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+  constexpr std::array<std::uint8_t, 16> data = {
+      0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+      0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  constexpr SimdUuidV4 uuid(data);
+  EXPECT_EQ(std::string(uuid), "6BBBB416-EDC3-405F-A86D-231D5800235E");
 }
 
 TEST(SimdUuidV4, FromString) {
@@ -28,7 +30,7 @@ TEST(SimdUuidV4, FromString) {
   EXPECT_EQ(std::string(*uuid), from);
 }
 
-TEST(BasicUuidV4, FromData) {
+TEST(SimdUuidV4, FromData) {
   std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
   std::uint8_t data[16] = {0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
                            0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
@@ -45,7 +47,7 @@ TEST(SimdUuidV4, FromStringInvalidChar) {
   }
 }
 
-TEST(BasicUuidV4, FromStringInvalidDash) {
+TEST(SimdUuidV4, FromStringInvalidDash) {
   std::string from = "6BBBB416-EDC3-405F-A86D-231D5800235E";
   for (int i = 0; i < 36; ++i) {
     if (i == 8 || i == 13 || i == 18 || i == 23) {
@@ -66,7 +68,7 @@ TEST(SimdUuidV4, FromStringInvalidLowerCase) {
   }
 }
 
-TEST(BasicUuidV4, HashNoCollision) {
+TEST(SimdUuidV4, HashNoCollision) {
   SimdUuidV4 uuid_1 = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
   SimdUuidV4 uuid_2 = SimdUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFE);
   EXPECT_NE(uuid_1.hash(), uuid_2.hash());
