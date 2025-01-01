@@ -1,6 +1,7 @@
 #ifndef ANDYCCS_UUID_BASIC_H
 #define ANDYCCS_UUID_BASIC_H
 
+#include <array>
 #include <cstdint>
 #include <cstdlib>
 #include <optional>
@@ -30,14 +31,13 @@ namespace andyccs {
 class BasicUuidV4 {
 public:
   // Default constructor for BasicUuidV4
-  constexpr BasicUuidV4() = default;
+  BasicUuidV4() = default;
 
   // Construct BasicUuidV4 from two uint64_t. Example:
   // - high = 0xF448CB35C48445F2
   // - low  = 0xB7622A19E4E96ED2
   // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
-  constexpr BasicUuidV4(uint64_t high, uint64_t low) : high_(high), low_(low) {}
-  BasicUuidV4(const std::uint8_t (&data)[16]);
+  BasicUuidV4(uint64_t high, uint64_t low);
 
   // Construct BasicUuidV4 from a 16-byte array. Example:
   // - data = {
@@ -48,6 +48,9 @@ public:
   // - low  = 0xB7622A19E4E96ED2
   // - String representation: "F448CB35-C484-45F2-B762-2A19E4E96ED2"
   BasicUuidV4(const std::uint8_t (&data)[16]);
+
+  // Same as above, but with std::array instead of C-style array
+  constexpr BasicUuidV4(std::array<std::uint8_t, 16> data) : data_(data) {}
 
   // Copy constructor and assignment operator
   BasicUuidV4(const BasicUuidV4 &other) = default;
@@ -72,7 +75,7 @@ public:
 
   // Equality operators
   bool operator==(const BasicUuidV4 &other) const {
-    return high_ == other.high_ && low_ == other.low_;
+    return data_ == other.data_;
   }
 
   bool operator!=(const BasicUuidV4 &other) const { return !(*this == other); }
@@ -81,8 +84,7 @@ public:
   size_t hash() const;
 
 private:
-  uint64_t high_ = 0;
-  uint64_t low_ = 0;
+  std::array<std::uint8_t, 16> data_ = {0};
 };
 
 template <typename RNG> class BasicUuidV4Generator {

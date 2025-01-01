@@ -19,7 +19,7 @@ static void BM_BoostUuidV4FromString(benchmark::State &state) {
 }
 BENCHMARK(BM_BoostUuidV4FromString)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4FromData(benchmark::State &state) {
+static void BM_BoostUuidV4FromArrayData(benchmark::State &state) {
   // "FEDCBA98-7654-3210-8899-AABBCCDDEEFF";
   std::uint8_t data[16] = {0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,
                            0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF};
@@ -29,7 +29,7 @@ static void BM_BoostUuidV4FromData(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4FromData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidV4FromArrayData)->Range(1 << 8, 1 << 8);
 
 static void BM_BoostUuidV4ToString(benchmark::State &state) {
   std::uint8_t data[16] = {0xFE, 0xDC, 0xBA, 0x98, 0x76, 0x54, 0x32, 0x10,

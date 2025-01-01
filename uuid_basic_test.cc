@@ -10,9 +10,16 @@ TEST(BasicUuidV4, CreateDefault) {
   EXPECT_EQ(std::string(uuid), "00000000-0000-0000-0000-000000000000");
 }
 
+TEST(BasicUuidV4, CreateHighLow) {
+  BasicUuidV4 uuid = BasicUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+}
+
 TEST(BasicUuidV4, CreateConstExpr) {
-  constexpr BasicUuidV4 uuid =
-      BasicUuidV4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  constexpr std::array<std::uint8_t, 16> data = {
+      0x6B, 0xBB, 0xB4, 0x16, 0xED, 0xC3, 0x40, 0x5F,
+      0xA8, 0x6D, 0x23, 0x1D, 0x58, 0x0,  0x23, 0x5E};
+  constexpr BasicUuidV4 uuid(data);
   EXPECT_EQ(std::string(uuid), "FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
 }
 
