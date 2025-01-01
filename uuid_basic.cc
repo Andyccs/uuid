@@ -75,8 +75,8 @@ void BasicUuidV4::ToChars(char (&buffer)[37]) const {
 }
 
 BasicUuidV4::operator std::string() const {
-  std::string result;
-  ToString(result);
+  std::string result(36, char());
+  ToCharsInternal(data_, result.data());
   return result;
 }
 
