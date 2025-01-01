@@ -46,26 +46,26 @@ Load Average: 0.10, 0.05, 0.01
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BasicUuidV4FromString/256                4784 ns         4915 ns       142807
-BM_BasicUuidV4FromArrayData/256              113 ns          116 ns      6047349
-BM_BasicUuidV4FromStdArrayData/256          44.8 ns         46.1 ns     15267399**
-BM_BasicUuidV4ToString/256                  2791 ns         2847 ns       243260
-BM_BasicUuidV4ToStringPrealloc/256          1191 ns         1220 ns       570493
-BM_BasicUuidV4ToChars/256                   1080 ns         1107 ns       630965
-BM_BasicUuidV4GeneratorMt19937/256          3077 ns         3153 ns       223853
-BM_BasicUuidV4GeneratorMt19937_64/256        923 ns          946 ns       728672
+BM_BasicUuidV4FromString/256                4834 ns         4938 ns       149602
+BM_BasicUuidV4FromArrayData/256              113 ns          115 ns      6151905
+BM_BasicUuidV4FromStdArrayData/256          45.0 ns         46.0 ns     15374147**
+BM_BasicUuidV4ToString/256                  2803 ns         2864 ns       244850
+BM_BasicUuidV4ToStringPrealloc/256          1252 ns         1279 ns       559881
+BM_BasicUuidV4ToChars/256                   1124 ns         1148 ns       609280
+BM_BasicUuidV4GeneratorMt19937/256          2655 ns         2712 ns       254159
+BM_BasicUuidV4GeneratorMt19937_64/256        528 ns          540 ns      1285630**
 
 -------------------------------------------------------------------------------
 Benchmark                                     Time             CPU   Iterations
 -------------------------------------------------------------------------------
-BM_SimdUuidV4FromString/256                 573 ns          583 ns      1182113**
-BM_SimdUuidV4FromArrayData/256              110 ns          112 ns      6347128
-BM_SimdUuidV4FromStdArrayData/256          84.7 ns         86.3 ns      8285210
-BM_SimdUuidV4ToString/256                  1808 ns         1854 ns       378505**
-BM_SimdUuidV4ToStringPrealloc/256           371 ns          381 ns      1784369**
-BM_SimdUuidV4ToChars/256                    298 ns          305 ns      2289882**
-BM_SimdUuidV4GeneratorMt19937/256          3139 ns         3219 ns       213085
-BM_SimdUuidV4GeneratorMt19937_64/256        910 ns          933 ns       762352**
+BM_SimdUuidV4FromString/256                 565 ns          577 ns      1190239**
+BM_SimdUuidV4FromArrayData/256              105 ns          107 ns      6525821
+BM_SimdUuidV4FromStdArrayData/256          83.0 ns         84.7 ns      8730858
+BM_SimdUuidV4ToString/256                  1812 ns         1849 ns       389448**
+BM_SimdUuidV4ToStringPrealloc/256           374 ns          382 ns      1843502**
+BM_SimdUuidV4ToChars/256                    305 ns          312 ns      2274846**
+BM_SimdUuidV4GeneratorMt19937/256          2580 ns         2634 ns       263567
+BM_SimdUuidV4GeneratorMt19937_64/256        530 ns          541 ns      1266143**
 
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations

@@ -109,7 +109,10 @@ public:
 
   // Generate a new BasicUuidV4. Note: This function is not thread-safe.
   BasicUuidV4 GenerateUuid() {
-    return BasicUuidV4(distribution_(generator_), distribution_(generator_));
+    std::array<uint8_t, 16> data;
+    *(uint64_t *)data.data() = distribution_(generator_);
+    *(uint64_t *)(data.data() + 8) = distribution_(generator_);
+    return BasicUuidV4(data);
   }
 
 private:
