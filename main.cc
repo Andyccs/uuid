@@ -1,7 +1,3 @@
-#include "AndyccsConfig.h"
-#include "uuid_basic.h"
-#include "uuid_simd.h"
-
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -12,6 +8,11 @@
 #include <string>
 #include <sys/types.h>
 #include <unordered_map>
+
+#include "AndyccsConfig.h"
+#include "uuid_basic.h"
+#include "uuid_simd.h"
+#include "vendor/yesmey/UUID.h"
 
 uint64_t convert_to_uint64(const uint8_t *array) {
   uint64_t result = 0;
@@ -94,9 +95,9 @@ int main() {
   boost::uuids::uuid boost_uuid_4 = gen(from);
   std::cout << "Boost UUID 4: " << boost_uuid_4 << std::endl;
 
-  uint64_t high = convert_to_uint64(data);
-  uint64_t low = convert_to_uint64(&data[8]);
-  printf("%lX %lX\n", high, low);
+  meyr::UUID meyr_uuid_1;
+  meyr_uuid_1.try_parse("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+  std::cout << "MEYR UUID 1: " << meyr_uuid_1.to_string('D') << std::endl;
 
   return 0;
 }

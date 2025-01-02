@@ -84,14 +84,18 @@ FetchContent_Declare(
 )
 set(BOOST_INCLUDE_LIBRARIES uuid)
 FetchContent_MakeAvailable(Boost)
+
+add_library(yesmey_uuid vendor/yesmey/UUID.h)
+set_target_properties(yesmey_uuid PROPERTIES LINKER_LANGUAGE CXX)
+
 add_executable(uuid_benchmark_test uuid_benchmark_test.cc)
-target_link_libraries(uuid_benchmark_test uuid_benchmark_utils benchmark::benchmark Boost::uuid andyccs_compiler_flags)
+target_link_libraries(uuid_benchmark_test uuid_benchmark_utils yesmey_uuid benchmark::benchmark Boost::uuid andyccs_compiler_flags)
 
 #### Executable
 
 # add the executable
 add_executable(Andyccs main.cc)
-target_link_libraries(Andyccs PUBLIC uuid_basic uuid_simd Boost::uuid andyccs_compiler_flags)
+target_link_libraries(Andyccs PUBLIC uuid_basic uuid_simd yesmey_uuid Boost::uuid andyccs_compiler_flags)
 
 # add the binary tree to the search path for include files
 # so that we will find AndyccsConfig.h
