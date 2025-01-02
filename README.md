@@ -58,7 +58,7 @@ BM_BasicUuidV4GeneratorMt19937_64/256        528 ns          542 ns      1298976
 -------------------------------------------------------------------------------
 Benchmark                                     Time             CPU   Iterations
 -------------------------------------------------------------------------------
-BM_SimdUuidV4FromString/256                 443 ns          458 ns      1511570
+BM_SimdUuidV4FromString/256                 443 ns          458 ns      1511570**
 BM_SimdUuidV4FromArrayData/256              109 ns          113 ns      6265002
 BM_SimdUuidV4FromStdArrayData/256          50.4 ns         52.2 ns     13250047**
 BM_SimdUuidV4ToString/256                  1793 ns         1855 ns       376358**
@@ -77,8 +77,8 @@ BM_BoostUuidV4ToChars/256                    851 ns          874 ns       802192
 BM_BoostUuidV4GeneratorMt19937/256          2202 ns         2262 ns       304858**
 BM_BoostUuidV4GeneratorMt19937_64/256        980 ns         1007 ns       697156
 
-BM_MeyrUuidV4FromString/256                  259 ns          266 ns      2614486**
-BM_MeyrUuidV4ToString/256                   2790 ns         2918 ns       240817
+BM_MeyrUuidV4FromString/256                  468 ns          488 ns      1403036
+BM_MeyrUuidV4ToString/256                   2829 ns         2951 ns       229226
 ```
 
 # Development
@@ -126,6 +126,8 @@ rm -r build/
 - Override stream operators
 - Override comparator operators
 - Benchmarking comparisons with other libraries
+  - https://github.com/mariusbancila/stduuid
+  - https://github.com/libstud/libstud-uuid
 - Thread safe generators
 - RFC 9562 Compliant
 - Other UUID version

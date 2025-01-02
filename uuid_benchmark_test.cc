@@ -94,10 +94,10 @@ BENCHMARK(BM_BoostUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 static void BM_MeyrUuidV4FromString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  boost::uuids::uuid uuid(data);
-  std::string from = boost::uuids::to_string(uuid);
+  std::string from = boost::uuids::to_string(boost::uuids::uuid(data));
 
   meyr::UUID meyr_uuid;
+  benchmark::DoNotOptimize(meyr_uuid);
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(meyr_uuid.try_parse(from));
