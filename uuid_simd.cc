@@ -184,16 +184,16 @@ inline __m128i stom128i(__m256i pretty_input) {
   // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
   // 10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101010 AND
   // SHIFT LEFT 3
-  // 00000000 80808080 80808080 80808080 80808080 80800000 00000000 00000000
-  __m256i alpha = _mm256_slli_epi64(_mm256_and_si256(a, mask), 3);
+  // 00000000 FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFF0000 00000000 00000000
+  __m256i alpha = _mm256_cmpgt_epi8(a, mask);
 
   // sub_mask: Subtraction mask. What should be subtracted from each byte.
-  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
+  // 00000000 07070707 07070707 07070707 00000707 07070707 00000000 00000000
   __m256i sub_mask = _mm256_blendv_epi8(digits_offset, alpha_offset, alpha);
 
   // spaced_result: Almost the result, but there is a 0x0 space in between
   // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
-  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
+  // 00000000 07070707 07070707 07070707 00000707 07070707 00000000 00000000
   // 08080909 0A0A0B0B 0C0C0D0D 0E0E0F0F 0F0E0D0C 0B0A0908 07060504 03020100
   __m256i spaced_result = _mm256_sub_epi8(a, sub_mask);
 
@@ -208,7 +208,7 @@ inline __m128i stom128i(__m256i pretty_input) {
   // 00880099 00AA00BB 00CC00DD 00EE00FF 00FE00DC 00BA0098 00760054 00320010
   const __m256i mask_2 = _mm256_set1_epi16(0x00FF);
   __m256i spaced_result_intermediate = _mm256_and_si256(
-      _mm256_or_si256(pretty_result, _mm256_srli_epi16(pretty_result, 4)),
+      _mm256_or_si256(pretty_result, _mm256_srli_epi64(pretty_result, 4)),
       mask_2);
 
   // final_result: Packed the result in the lower 64 bits
