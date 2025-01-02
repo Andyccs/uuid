@@ -123,8 +123,8 @@ public:
   // Not thread safe.
   SimdUuidV4 GenerateUuid() {
     std::array<uint8_t, 16> data;
-    *(uint64_t *)data.data() = distribution_(generator_);
-    *(uint64_t *)(data.data() + 8) = distribution_(generator_);
+    *reinterpret_cast<uint64_t *>(data.data()) = distribution_(generator_);
+    *reinterpret_cast<uint64_t *>(data.data() + 8) = distribution_(generator_);
     return SimdUuidV4(data);
   }
 

@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <immintrin.h>
+#include <iostream>
 #include <optional>
 #include <smmintrin.h>
 
@@ -115,20 +116,23 @@ inline void m256itos(__m256i input256, char *mem) {
   //   *(uint64_t *)(mem + 28) = _mm256_extract_epi64(res, 3);
 }
 
-inline bool
-ValidateInput(__m256i pretty_input) { // Create a mask of valid bytes
-  static uint8_t kValidHex[] = {0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-                                0x38, 0x39, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46};
-  __m256i result = _mm256_set_epi64x(0, 0, 0, 0);
-  for (const auto &hex : kValidHex) {
-    __m256i valid_bytes_mask = _mm256_set1_epi8(hex);
-    __m256i cmp_result = _mm256_cmpeq_epi8(pretty_input, valid_bytes_mask);
-    result = _mm256_or_si256(result, cmp_result);
-  }
+inline bool ValidateInput(__m256i pretty_input) {
+  const __m128i allowed_char_range =
+      _mm_setr_epi8('0', '9', 'A', 'F', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-  const __m256i one = _mm256_set_epi64x(0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF,
-                                        0xFFFFFFFFFFFFFFFF, 0xFFFFFFFFFFFFFFFF);
-  return _mm256_testc_si256(result, one);
+  // For each of the character in the second argument
+  // If the character is in the range of the first argument
+  // Then the corresponding bit in the result is set to 0
+  // Return the smallest index of the first 1 bit.
+  int cmp_lower = _mm_cmpistri(
+      allowed_char_range, _mm256_extractf128_si256(pretty_input, 0),
+      _SIDD_UBYTE_OPS | _SIDD_CMP_RANGES | _SIDD_NEGATIVE_POLARITY |
+          _SIDD_LEAST_SIGNIFICANT);
+  int cmp_higher = _mm_cmpistri(
+      allowed_char_range, _mm256_extractf128_si256(pretty_input, 1),
+      _SIDD_UBYTE_OPS | _SIDD_CMP_RANGES | _SIDD_NEGATIVE_POLARITY |
+          _SIDD_LEAST_SIGNIFICANT);
+  return cmp_lower == 16 && cmp_higher == 16;
 }
 
 inline __m256i CreateInput(const char *mem) {
@@ -285,7 +289,7 @@ std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
   }
   __m128i result_i = stom128i(pretty_input);
   std::array<uint8_t, 16> result;
-  _mm_storeu_si128((__m128i *)result.data(), result_i);
+  _mm_storeu_si128(reinterpret_cast<__m128i *>(result.data()), result_i);
   return SimdUuidV4(result);
 }
 
