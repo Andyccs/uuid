@@ -172,62 +172,48 @@ inline __m128i stom128i(__m256i pretty_input) {
   // Subtract input with sub to map each ASCII to its hex
   // '0' (0x30) => 0x00
   // 'A' (0x41) => 0x11
-  // 38383939 41414242 43434444 45454646 46454443 42413938 37363534 33323130
+  // 46464545 44444343 42424141 39393838 30313233 34353637 38394142 43444546
   // 30303030 30303030 30303030 30303030 30303030 30303030 30303030 30303030 SUB
-  // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
+  // 16161515 14141313 12121111 09090808 00010203 04050607 08091112 13141516
   __m256i a = _mm256_sub_epi8(pretty_input, sub);
 
   // alpha: Determine bytes are alpha
   // 0x80 means alpha
   // 0x00 means digit
   //
-  // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
-  // 10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101010 AND
-  // SHIFT LEFT 3
-  // 00000000 FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFF FFFF0000 00000000 00000000
+  // 16161515 14141313 12121111 09090808 00010203 04050607 08091112 13141516
+  // 10101010 10101010 10101010 10101010 10101010 10101010 10101010 10101010 cmp
+  // FFFFFFFF FFFFFFFF FFFFFFFF 00000000 00000000 00000000 0000FFFF FFFFFFFF
   __m256i alpha = _mm256_cmpgt_epi8(a, mask);
 
   // sub_mask: Subtraction mask. What should be subtracted from each byte.
-  // 00000000 07070707 07070707 07070707 00000707 07070707 00000000 00000000
+  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
   __m256i sub_mask = _mm256_blendv_epi8(digits_offset, alpha_offset, alpha);
 
   // spaced_result: Almost the result, but there is a 0x0 space in between
-  // 08080909 11111212 13131414 15151616 16151413 12110908 07060504 03020100
-  // 00000000 07070707 07070707 07070707 00000707 07070707 00000000 00000000
-  // 08080909 0A0A0B0B 0C0C0D0D 0E0E0F0F 0F0E0D0C 0B0A0908 07060504 03020100
+  // 16161515 14141313 12121111 09090808 00010203 04050607 08091112 13141516
+  // 07070707 07070707 07070707 00000000 00000000 00000000 00000707 07070707
+  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
   __m256i spaced_result = _mm256_sub_epi8(a, sub_mask);
 
-  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 00010203 04050607 08090A0B 0C0D0E0F
-  // 0F0F0E0E 0D0D0C0C 0B0B0A0A 09090808 01000302 05040706 09080B0A 0D0C0F0E
-  const __m256i pretty_shuffle =
-      _mm256_set_epi8(14, 15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1, 14,
-                      15, 12, 13, 10, 11, 8, 9, 6, 7, 4, 5, 2, 3, 0, 1);
-  __m256i pretty_result = _mm256_shuffle_epi8(spaced_result, pretty_shuffle);
+  // 0F0E0D0C 0B0A0908 0F0E0D0C 0B0A0908 00020406 080A0C0E 01030507 090B0D0F
+  //                 ^3                ^2                ^1                ^0
+  const __m256i odd_even_shuffle =
+      _mm256_set_epi8(15, 13, 11, 9, 7, 5, 3, 1, 14, 12, 10, 8, 6, 4, 2, 0, 15,
+                      13, 11, 9, 7, 5, 3, 1, 14, 12, 10, 8, 6, 4, 2, 0);
+  __m256i odd_even_shuffled_result =
+      _mm256_shuffle_epi8(spaced_result, odd_even_shuffle);
 
-  // spaced_result_intermediate: Trying to remove the 0x0 space.
-  // 00880099 00AA00BB 00CC00DD 00EE00FF 00FE00DC 00BA0098 00760054 00320010
-  const __m256i mask_2 = _mm256_set1_epi16(0x00FF);
-  __m256i spaced_result_intermediate = _mm256_and_si256(
-      _mm256_or_si256(pretty_result, _mm256_srli_epi64(pretty_result, 4)),
-      mask_2);
+  uint64_t high_odd = _mm256_extract_epi64(odd_even_shuffled_result, 0);
+  uint64_t high_even = _mm256_extract_epi64(odd_even_shuffled_result, 1);
+  uint64_t low_odd = _mm256_extract_epi64(odd_even_shuffled_result, 2);
+  uint64_t low_even = _mm256_extract_epi64(odd_even_shuffled_result, 3);
 
-  // final_result: Packed the result in the lower 64 bits
-  // input: "FEDCBA98-7654-3210-8899-AABBCCDDEEFF"
-  // high = 00000000 00000000 FEDCBA98 76543210
-  // low  = 00000000 00000000 8899AABB CCDDEEFF
-  const __m128i shuffle =
-      _mm_setr_epi8(0, 2, 4, 6, 8, 10, 12, 14, -1, -1, -1, -1, -1, -1, -1, -1);
-  __m128i high = _mm_shuffle_epi8(
-      _mm256_extracti128_si256(spaced_result_intermediate, 0), shuffle);
-  __m128i low = _mm_shuffle_epi8(
-      _mm256_extracti128_si256(spaced_result_intermediate, 1), shuffle);
+  uint64_t high = (high_odd << 4) | high_even;
+  uint64_t low = (low_odd << 4) | low_even;
 
-  // high = FEDCBA98 76543210
-  // low = 8899AABB CCDDEEFF
   // FFEEDDCC BBAA9988 10325476 98BADCFE
-  // ^               ^ ^               ^
-  // lend       lstart hend       hstart
-  return _mm_set_epi64x(_mm_extract_epi64(low, 0), _mm_extract_epi64(high, 0));
+  return _mm_set_epi64x(low, high);
 }
 
 inline void uint64_to_bytes(uint64_t value, uint8_t *array) {
