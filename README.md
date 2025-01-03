@@ -46,7 +46,7 @@ Load Average: 0.10, 0.05, 0.01
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BasicUuidV4FromString/256                4821 ns         4945 ns       143193
+BM_BasicUuidV4FromString/256                4221 ns         3889 ns       173221
 BM_BasicUuidV4FromArrayData/256              113 ns          116 ns      6110021
 BM_BasicUuidV4FromStdArrayData/256          82.5 ns         84.6 ns      8070011
 BM_BasicUuidV4ToString/256                  2752 ns         2823 ns       244132

@@ -8,8 +8,59 @@
 namespace andyccs {
 namespace {
 
-inline uint8_t HexToVal(const char &c) {
-  return std::isdigit(c) ? (c - '0') : (c - 'A' + 10);
+struct LookupTable1 {
+  uint8_t c[71];
+
+  constexpr LookupTable1() : c{} {
+    c['0'] = 0 << 4;
+    c['1'] = 1 << 4;
+    c['2'] = 2 << 4;
+    c['3'] = 3 << 4;
+    c['4'] = 4 << 4;
+    c['5'] = 5 << 4;
+    c['6'] = 6 << 4;
+    c['7'] = 7 << 4;
+    c['8'] = 8 << 4;
+    c['9'] = 9 << 4;
+    c['A'] = 0xA << 4;
+    c['B'] = 0xB << 4;
+    c['C'] = 0xC << 4;
+    c['D'] = 0xD << 4;
+    c['E'] = 0xE << 4;
+    c['F'] = 0xF << 4;
+  }
+  constexpr uint8_t operator[](char ch) const { return c[ch]; }
+};
+
+struct LookupTable2 {
+  uint8_t c[71];
+
+  constexpr LookupTable2() : c{} {
+    c['0'] = 0;
+    c['1'] = 1;
+    c['2'] = 2;
+    c['3'] = 3;
+    c['4'] = 4;
+    c['5'] = 5;
+    c['6'] = 6;
+    c['7'] = 7;
+    c['8'] = 8;
+    c['9'] = 9;
+    c['A'] = 0xA;
+    c['B'] = 0xB;
+    c['C'] = 0xC;
+    c['D'] = 0xD;
+    c['E'] = 0xE;
+    c['F'] = 0xF;
+  }
+  constexpr uint8_t operator[](char ch) const { return c[ch]; }
+};
+
+constexpr LookupTable1 kLookupTable1;
+constexpr LookupTable2 kLookupTable2;
+
+inline uint8_t HexToVal(const char &c1, const char &c2) {
+  return kLookupTable1[c1] | kLookupTable2[c2];
 }
 
 inline bool IsValid(const char &c) {
@@ -31,7 +82,7 @@ inline bool ConvertStringRangeToBytes(std::string_view from, size_t start,
     if (!IsValid(c1) || !IsValid(c2)) {
       return false;
     }
-    data[data_start_index++] = (HexToVal(c1) << 4) | HexToVal(c2);
+    data[data_start_index++] = HexToVal(c1, c2);
   }
   return true;
 }
