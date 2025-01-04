@@ -2,7 +2,6 @@
 
 #include <cstdint>
 #include <immintrin.h>
-#include <iostream>
 #include <optional>
 #include <smmintrin.h>
 
@@ -226,23 +225,23 @@ inline void ToCharsInternal(uint8_t const *data, char *buffer) {
 
 static constexpr char kHexMap[] = {"0123456789ABCDEF"};
 
-SimdUuidV4::SimdUuidV4(uint64_t high, uint64_t low) {
+SimdUuid::SimdUuid(uint64_t high, uint64_t low) {
   uint64_to_bytes(high, data_.data());
   uint64_to_bytes(low, data_.data() + 8);
 }
 
-SimdUuidV4::SimdUuidV4(const std::uint8_t (&data)[16]) {
+SimdUuid::SimdUuid(const std::uint8_t (&data)[16]) {
   std::copy(data, data + 16, data_.begin());
 }
 
-void SimdUuidV4::ToString(std::string &result) const {
+void SimdUuid::ToString(std::string &result) const {
   if (result.size() != 36) {
     result.resize(36);
   }
   ToCharsInternal(data_.data(), result.data());
 }
 
-SimdUuidV4::operator std::string() const {
+SimdUuid::operator std::string() const {
   constexpr std::string_view kDefaultString =
       "012345678901234567890123456789012345";
   std::string result(kDefaultString);
@@ -250,12 +249,12 @@ SimdUuidV4::operator std::string() const {
   return result;
 }
 
-void SimdUuidV4::ToChars(char (&buffer)[37]) const {
+void SimdUuid::ToChars(char (&buffer)[37]) const {
   ToCharsInternal(data_.data(), buffer);
   buffer[36] = '\0';
 }
 
-std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
+std::optional<SimdUuid> SimdUuid::FromString(std::string_view from) {
   if (from.size() != 36) {
     return std::nullopt;
   }
@@ -271,10 +270,10 @@ std::optional<SimdUuidV4> SimdUuidV4::FromString(std::string_view from) {
   __m128i result_i = stom128i(pretty_input);
   std::array<uint8_t, 16> result;
   _mm_storeu_si128(reinterpret_cast<__m128i *>(result.data()), result_i);
-  return SimdUuidV4(result);
+  return SimdUuid(result);
 }
 
-size_t SimdUuidV4::hash() const {
+size_t SimdUuid::hash() const {
   std::string result;
   ToString(result);
   return std::hash<std::string>()(std::move(result));

@@ -40,41 +40,41 @@ void print256_num(__m256i var, std::string_view description) {
 }
 
 int main() {
-  // Generate a random BasicUuidV4
-  andyccs::BasicUuidV4Generator<std::mt19937_64> generator_1;
-  andyccs::BasicUuidV4 basic_uuid_1 = generator_1.GenerateUuid();
-  std::cout << "BasicUuidV4 1: " << std::string(basic_uuid_1) << std::endl;
-  // BasicUuidV4 1: 6EE37CFB-05E3-3CD7-D6A2-7B68F43C6E52
+  // Generate a random BasicUuid
+  andyccs::BasicUuidGenerator<std::mt19937_64> generator_1;
+  andyccs::BasicUuid basic_uuid_1 = generator_1.GenerateUuid();
+  std::cout << "BasicUuid 1: " << std::string(basic_uuid_1) << std::endl;
+  // BasicUuid 1: 6EE37CFB-05E3-3CD7-D6A2-7B68F43C6E52
 
-  // Construct a BasicUuidV4
-  andyccs::BasicUuidV4 basic_uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
-  std::cout << "BasicUuidV4 2: " << std::string(basic_uuid_2) << std::endl;
-  // BasicUuidV4 2: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
+  // Construct a BasicUuid
+  andyccs::BasicUuid basic_uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "BasicUuid 2: " << std::string(basic_uuid_2) << std::endl;
+  // BasicUuid 2: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
 
-  // Construct a BasicUuidV4 from string
-  std::optional<andyccs::BasicUuidV4> basic_uuid_3 =
-      andyccs::BasicUuidV4::FromString("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
-  std::cout << "BasicUuidV4 3: " << std::string(*basic_uuid_3) << std::endl;
-  // BasicUuidV4 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
+  // Construct a BasicUuid from string
+  std::optional<andyccs::BasicUuid> basic_uuid_3 =
+      andyccs::BasicUuid::FromString("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+  std::cout << "BasicUuid 3: " << std::string(*basic_uuid_3) << std::endl;
+  // BasicUuid 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
 
-  // Generate a random SimdUuidV4
-  andyccs::SimdUuidV4Generator<std::mt19937_64> generator_2;
-  andyccs::SimdUuidV4 simd_uuid_1 = generator_2.GenerateUuid();
-  std::cout << "SimdUuidV4 1: " << std::string(simd_uuid_1) << std::endl;
-  // SimdUuidV4 1: 7DA2E470-5228-EF80-9BD6-B33D98445578
+  // Generate a random SimdUuid
+  andyccs::SimdUuidGenerator<std::mt19937_64> generator_2;
+  andyccs::SimdUuid simd_uuid_1 = generator_2.GenerateUuid();
+  std::cout << "SimdUuid 1: " << std::string(simd_uuid_1) << std::endl;
+  // SimdUuid 1: 7DA2E470-5228-EF80-9BD6-B33D98445578
 
-  // Construct a SimdUuidV4
-  andyccs::SimdUuidV4 simd_uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
-  std::cout << "SimdUuidV4 2: " << std::string(simd_uuid_2) << std::endl;
-  // SimdUuidV4 2: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
+  // Construct a SimdUuid
+  andyccs::SimdUuid simd_uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "SimdUuid 2: " << std::string(simd_uuid_2) << std::endl;
+  // SimdUuid 2: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
 
-  // Construct a BasicUuidV4 from string
-  std::optional<andyccs::SimdUuidV4> simd_uuid_3 =
-      andyccs::SimdUuidV4::FromString("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
-  std::cout << "SimdUuidV4 3: " << std::string(*simd_uuid_3) << std::endl;
-  // SimdUuidV4 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
+  // Construct a BasicUuid from string
+  std::optional<andyccs::SimdUuid> simd_uuid_3 =
+      andyccs::SimdUuid::FromString("FEDCBA98-7654-3210-8899-AABBCCDDEEFF");
+  std::cout << "SimdUuid 3: " << std::string(*simd_uuid_3) << std::endl;
+  // SimdUuid 3: FEDCBA98-7654-3210-8899-AABBCCDDEEFF
 
-  std::unordered_map<andyccs::BasicUuidV4, std::string> my_map;
+  std::unordered_map<andyccs::BasicUuid, std::string> my_map;
 
   // auto generator = boost::uuids::random_generator();
   boost::uuids::basic_random_generator<std::mt19937> generator;

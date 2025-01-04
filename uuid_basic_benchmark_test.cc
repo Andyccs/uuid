@@ -7,50 +7,50 @@
 
 namespace andyccs {
 
-static void BM_BasicUuidV4FromString(benchmark::State &state) {
+static void BM_BasicUuidFromString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  BasicUuidV4 uuid(data);
+  BasicUuid uuid(data);
   std::string from = std::string(uuid);
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(BasicUuidV4::FromString(from));
+      benchmark::DoNotOptimize(BasicUuid::FromString(from));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4FromString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidFromString)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4FromArrayData(benchmark::State &state) {
+static void BM_BasicUuidFromArrayData(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
 
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(BasicUuidV4(data));
+      benchmark::DoNotOptimize(BasicUuid(data));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4FromArrayData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidFromArrayData)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4FromStdArrayData(benchmark::State &state) {
+static void BM_BasicUuidFromStdArrayData(benchmark::State &state) {
   std::array<std::uint8_t, 16> data;
   GenerateRandomData(data);
 
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(BasicUuidV4(data));
+      benchmark::DoNotOptimize(BasicUuid(data));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4FromStdArrayData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidFromStdArrayData)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4ToString(benchmark::State &state) {
+static void BM_BasicUuidToString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  BasicUuidV4 uuid(data);
+  BasicUuid uuid(data);
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(std::string(uuid));
@@ -58,12 +58,12 @@ static void BM_BasicUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4ToString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidToString)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4ToStringPrealloc(benchmark::State &state) {
+static void BM_BasicUuidToStringPrealloc(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  BasicUuidV4 uuid(data);
+  BasicUuid uuid(data);
   std::string result;
   result.resize(36);
   for (auto _ : state) {
@@ -74,12 +74,12 @@ static void BM_BasicUuidV4ToStringPrealloc(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidToStringPrealloc)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4ToChars(benchmark::State &state) {
+static void BM_BasicUuidToChars(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  BasicUuidV4 uuid(data);
+  BasicUuid uuid(data);
 
   char result[37];
   for (auto _ : state) {
@@ -90,10 +90,10 @@ static void BM_BasicUuidV4ToChars(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4ToChars)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidToChars)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4GeneratorMt19937(benchmark::State &state) {
-  BasicUuidV4Generator<std::mt19937> generator;
+static void BM_BasicUuidGeneratorMt19937(benchmark::State &state) {
+  BasicUuidGenerator<std::mt19937> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator.GenerateUuid());
@@ -101,10 +101,10 @@ static void BM_BasicUuidV4GeneratorMt19937(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4GeneratorMt19937)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidGeneratorMt19937)->Range(1 << 8, 1 << 8);
 
-static void BM_BasicUuidV4GeneratorMt19937_64(benchmark::State &state) {
-  BasicUuidV4Generator<std::mt19937_64> generator;
+static void BM_BasicUuidGeneratorMt19937_64(benchmark::State &state) {
+  BasicUuidGenerator<std::mt19937_64> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator.GenerateUuid());
@@ -112,7 +112,7 @@ static void BM_BasicUuidV4GeneratorMt19937_64(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BasicUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BasicUuidGeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 
 } // namespace andyccs
 

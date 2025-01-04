@@ -11,7 +11,7 @@
 
 namespace andyccs {
 
-static void BM_BoostUuidV4FromString(benchmark::State &state) {
+static void BM_BoostUuidFromString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
   boost::uuids::uuid uuid(data);
@@ -25,9 +25,9 @@ static void BM_BoostUuidV4FromString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4FromString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidFromString)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4FromArrayData(benchmark::State &state) {
+static void BM_BoostUuidFromArrayData(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
 
@@ -38,9 +38,9 @@ static void BM_BoostUuidV4FromArrayData(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4FromArrayData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidFromArrayData)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4ToString(benchmark::State &state) {
+static void BM_BoostUuidToString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
   boost::uuids::uuid uuid(data);
@@ -52,9 +52,9 @@ static void BM_BoostUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4ToString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidToString)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4ToChars(benchmark::State &state) {
+static void BM_BoostUuidToChars(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
   boost::uuids::uuid uuid(data);
@@ -67,9 +67,9 @@ static void BM_BoostUuidV4ToChars(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4ToChars)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidToChars)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4GeneratorMt19937(benchmark::State &state) {
+static void BM_BoostUuidGeneratorMt19937(benchmark::State &state) {
   boost::uuids::basic_random_generator<std::mt19937> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
@@ -78,9 +78,9 @@ static void BM_BoostUuidV4GeneratorMt19937(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4GeneratorMt19937)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidGeneratorMt19937)->Range(1 << 8, 1 << 8);
 
-static void BM_BoostUuidV4GeneratorMt19937_64(benchmark::State &state) {
+static void BM_BoostUuidGeneratorMt19937_64(benchmark::State &state) {
   boost::uuids::basic_random_generator<std::mt19937_64> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
@@ -89,9 +89,9 @@ static void BM_BoostUuidV4GeneratorMt19937_64(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_BoostUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_BoostUuidGeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 
-static void BM_MeyrUuidV4FromString(benchmark::State &state) {
+static void BM_MeyrUuidFromString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
   std::string from = boost::uuids::to_string(boost::uuids::uuid(data));
@@ -105,9 +105,9 @@ static void BM_MeyrUuidV4FromString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_MeyrUuidV4FromString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_MeyrUuidFromString)->Range(1 << 8, 1 << 8);
 
-static void BM_MeyrUuidV4ToString(benchmark::State &state) {
+static void BM_MeyrUuidToString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
   boost::uuids::uuid uuid(data);
@@ -124,7 +124,7 @@ static void BM_MeyrUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_MeyrUuidV4ToString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_MeyrUuidToString)->Range(1 << 8, 1 << 8);
 
 } // namespace andyccs
 

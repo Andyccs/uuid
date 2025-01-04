@@ -104,28 +104,28 @@ inline void ToCharsInternal(const std::array<std::uint8_t, 16> &data,
 
 } // namespace
 
-BasicUuidV4::BasicUuidV4(uint64_t high, uint64_t low) {
+BasicUuid::BasicUuid(uint64_t high, uint64_t low) {
   uint64_to_bytes(high, data_.data());
   uint64_to_bytes(low, data_.data() + 8);
 }
 
-BasicUuidV4::BasicUuidV4(const std::uint8_t (&data)[16]) {
+BasicUuid::BasicUuid(const std::uint8_t (&data)[16]) {
   std::copy(data, data + 16, data_.begin());
 }
 
-void BasicUuidV4::ToString(std::string &result) const {
+void BasicUuid::ToString(std::string &result) const {
   if (result.size() != 36) {
     result.resize(36);
   }
   ToCharsInternal(data_, result.data());
 }
 
-void BasicUuidV4::ToChars(char (&buffer)[37]) const {
+void BasicUuid::ToChars(char (&buffer)[37]) const {
   ToCharsInternal(data_, buffer);
   buffer[36] = '\0';
 }
 
-BasicUuidV4::operator std::string() const {
+BasicUuid::operator std::string() const {
   constexpr std::string_view kDefaultString =
       "012345678901234567890123456789012345";
   std::string result(kDefaultString);
@@ -133,7 +133,7 @@ BasicUuidV4::operator std::string() const {
   return result;
 }
 
-std::optional<BasicUuidV4> BasicUuidV4::FromString(std::string_view from) {
+std::optional<BasicUuid> BasicUuid::FromString(std::string_view from) {
   if (from.size() != 36) {
     return std::nullopt;
   }
@@ -149,10 +149,10 @@ std::optional<BasicUuidV4> BasicUuidV4::FromString(std::string_view from) {
       !ConvertStringRangeToBytes(from, 24, 36, 10, data)) {
     return std::nullopt;
   }
-  return BasicUuidV4(data);
+  return BasicUuid(data);
 }
 
-size_t BasicUuidV4::hash() const {
+size_t BasicUuid::hash() const {
   std::string result;
   ToString(result);
   return std::hash<std::string>()(std::move(result));

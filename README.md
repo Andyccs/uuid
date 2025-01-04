@@ -7,25 +7,25 @@
 #include <random>
 
 int main() {
-  andyccs::BasicUuidV4Generator<std::mt19937_64> generator;
+  andyccs::BasicUuidGenerator<std::mt19937_64> generator;
 
-  // Generate a arandom BasicUuidV4
-  andyccs::BasicUuidV4 uuid_1 = generator.GenerateUuid();
-  std::cout << "BasicUuidV4 1: " << std::string(uuid_1) << std::endl;
+  // Generate a arandom BasicUuid
+  andyccs::BasicUuid uuid_1 = generator.GenerateUuid();
+  std::cout << "BasicUuid 1: " << std::string(uuid_1) << std::endl;
 
-  // Construct a BasicUuidV4
-  andyccs::BasicUuidV4 uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
-  std::cout << "BasicUuidV4 2: " << std::string(uuid_2) << std::endl;
-  andyccs::BasicUuidV4Generator<std::mt19937_64> generator;
+  // Construct a BasicUuid
+  andyccs::BasicUuid uuid_2(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "BasicUuid 2: " << std::string(uuid_2) << std::endl;
+  andyccs::BasicUuidGenerator<std::mt19937_64> generator;
 
-  // Generate a random SimdUuidV4Generator
-  andyccs::SimdUuidV4Generator<std::mt19937_64> generator;
-  andyccs::SimdUuidV4 uuid_3 = generator.GenerateUuid();
-  std::cout << "SimdUuidV4 3: " << std::string(uuid_3) << std::endl;
+  // Generate a random SimdUuidGenerator
+  andyccs::SimdUuidGenerator<std::mt19937_64> generator;
+  andyccs::SimdUuid uuid_3 = generator.GenerateUuid();
+  std::cout << "SimdUuid 3: " << std::string(uuid_3) << std::endl;
 
-  // Construct a SimdUuidV4
-  andyccs::SimdUuidV4 uuid_4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
-  std::cout << "SimdUuidV4 4: " << std::string(uuid_4) << std::endl;
+  // Construct a SimdUuid
+  andyccs::SimdUuid uuid_4(0xFEDCBA9876543210, 0x8899AABBCCDDEEFF);
+  std::cout << "SimdUuid 4: " << std::string(uuid_4) << std::endl;
 
   return 0;
 }
@@ -46,39 +46,39 @@ Load Average: 0.10, 0.05, 0.01
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BasicUuidV4FromString/256                4221 ns         3889 ns       173221
-BM_BasicUuidV4FromArrayData/256              113 ns          116 ns      6110021
-BM_BasicUuidV4FromStdArrayData/256          82.5 ns         84.6 ns      8070011
-BM_BasicUuidV4ToString/256                  2752 ns         2823 ns       244132
-BM_BasicUuidV4ToStringPrealloc/256          1197 ns         1228 ns       555348
-BM_BasicUuidV4ToChars/256                   1101 ns         1130 ns       619016
-BM_BasicUuidV4GeneratorMt19937/256          2636 ns         2705 ns       259139
-BM_BasicUuidV4GeneratorMt19937_64/256        528 ns          542 ns      1298976
+BM_BasicUuidFromString/256                4221 ns         3889 ns       173221
+BM_BasicUuidFromArrayData/256              113 ns          116 ns      6110021
+BM_BasicUuidFromStdArrayData/256          82.5 ns         84.6 ns      8070011
+BM_BasicUuidToString/256                  2752 ns         2823 ns       244132
+BM_BasicUuidToStringPrealloc/256          1197 ns         1228 ns       555348
+BM_BasicUuidToChars/256                   1101 ns         1130 ns       619016
+BM_BasicUuidGeneratorMt19937/256          2636 ns         2705 ns       259139
+BM_BasicUuidGeneratorMt19937_64/256        528 ns          542 ns      1298976
 
 -------------------------------------------------------------------------------
 Benchmark                                     Time             CPU   Iterations
 -------------------------------------------------------------------------------
-BM_SimdUuidV4FromString/256                 443 ns          458 ns      1511570**
-BM_SimdUuidV4FromArrayData/256              109 ns          113 ns      6265002
-BM_SimdUuidV4FromStdArrayData/256          50.4 ns         52.2 ns     13250047**
-BM_SimdUuidV4ToString/256                  1793 ns         1855 ns       376358**
-BM_SimdUuidV4ToStringPrealloc/256           369 ns          382 ns      1836975**
-BM_SimdUuidV4ToChars/256                    308 ns          319 ns      2203280**
-BM_SimdUuidV4GeneratorMt19937/256          2706 ns         2804 ns       249540
-BM_SimdUuidV4GeneratorMt19937_64/256        532 ns          545 ns      1298896**
+BM_SimdUuidFromString/256                 443 ns          458 ns      1511570**
+BM_SimdUuidFromArrayData/256              109 ns          113 ns      6265002
+BM_SimdUuidFromStdArrayData/256          50.4 ns         52.2 ns     13250047**
+BM_SimdUuidToString/256                  1793 ns         1855 ns       376358**
+BM_SimdUuidToStringPrealloc/256           369 ns          382 ns      1836975**
+BM_SimdUuidToChars/256                    308 ns          319 ns      2203280**
+BM_SimdUuidGeneratorMt19937/256          2706 ns         2804 ns       249540
+BM_SimdUuidGeneratorMt19937_64/256        532 ns          545 ns      1298896**
 
 --------------------------------------------------------------------------------
 Benchmark                                      Time             CPU   Iterations
 --------------------------------------------------------------------------------
-BM_BoostUuidV4FromString/256               23046 ns        23663 ns        28821
-BM_BoostUuidV4FromArrayData/256             48.1 ns         49.4 ns     14121043**
-BM_BoostUuidV4ToString/256                  2396 ns         2461 ns       286785
-BM_BoostUuidV4ToChars/256                    851 ns          874 ns       802192
-BM_BoostUuidV4GeneratorMt19937/256          2202 ns         2262 ns       304858**
-BM_BoostUuidV4GeneratorMt19937_64/256        980 ns         1007 ns       697156
+BM_BoostUuidFromString/256               23046 ns        23663 ns        28821
+BM_BoostUuidFromArrayData/256             48.1 ns         49.4 ns     14121043**
+BM_BoostUuidToString/256                  2396 ns         2461 ns       286785
+BM_BoostUuidToChars/256                    851 ns          874 ns       802192
+BM_BoostUuidGeneratorMt19937/256          2202 ns         2262 ns       304858**
+BM_BoostUuidGeneratorMt19937_64/256        980 ns         1007 ns       697156
 
-BM_MeyrUuidV4FromString/256                  468 ns          488 ns      1403036
-BM_MeyrUuidV4ToString/256                   2829 ns         2951 ns       229226
+BM_MeyrUuidFromString/256                  468 ns          488 ns      1403036
+BM_MeyrUuidToString/256                   2829 ns         2951 ns       229226
 ```
 
 # Development

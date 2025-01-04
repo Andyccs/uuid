@@ -7,51 +7,51 @@
 
 namespace andyccs {
 
-static void BM_SimdUuidV4FromString(benchmark::State &state) {
+static void BM_SimdUuidFromString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  SimdUuidV4 uuid(data);
+  SimdUuid uuid(data);
 
   std::string from = std::string(uuid);
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(SimdUuidV4::FromString(from));
+      benchmark::DoNotOptimize(SimdUuid::FromString(from));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4FromString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidFromString)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4FromArrayData(benchmark::State &state) {
+static void BM_SimdUuidFromArrayData(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
 
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(SimdUuidV4(data));
+      benchmark::DoNotOptimize(SimdUuid(data));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4FromArrayData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidFromArrayData)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4FromStdArrayData(benchmark::State &state) {
+static void BM_SimdUuidFromStdArrayData(benchmark::State &state) {
   std::array<std::uint8_t, 16> data;
   GenerateRandomData(data);
 
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
-      benchmark::DoNotOptimize(SimdUuidV4(data));
+      benchmark::DoNotOptimize(SimdUuid(data));
       benchmark::ClobberMemory();
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4FromStdArrayData)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidFromStdArrayData)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4ToString(benchmark::State &state) {
+static void BM_SimdUuidToString(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  SimdUuidV4 uuid(data);
+  SimdUuid uuid(data);
 
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
@@ -60,12 +60,12 @@ static void BM_SimdUuidV4ToString(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4ToString)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidToString)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4ToStringPrealloc(benchmark::State &state) {
+static void BM_SimdUuidToStringPrealloc(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  SimdUuidV4 uuid(data);
+  SimdUuid uuid(data);
 
   std::string result;
   result.resize(36);
@@ -77,12 +77,12 @@ static void BM_SimdUuidV4ToStringPrealloc(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4ToStringPrealloc)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidToStringPrealloc)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4ToChars(benchmark::State &state) {
+static void BM_SimdUuidToChars(benchmark::State &state) {
   std::uint8_t data[16];
   GenerateRandomData(data);
-  SimdUuidV4 uuid(data);
+  SimdUuid uuid(data);
 
   char result[37];
   for (auto _ : state) {
@@ -93,10 +93,10 @@ static void BM_SimdUuidV4ToChars(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4ToChars)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidToChars)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4GeneratorMt19937(benchmark::State &state) {
-  SimdUuidV4Generator<std::mt19937> generator;
+static void BM_SimdUuidGeneratorMt19937(benchmark::State &state) {
+  SimdUuidGenerator<std::mt19937> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator.GenerateUuid());
@@ -104,10 +104,10 @@ static void BM_SimdUuidV4GeneratorMt19937(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4GeneratorMt19937)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidGeneratorMt19937)->Range(1 << 8, 1 << 8);
 
-static void BM_SimdUuidV4GeneratorMt19937_64(benchmark::State &state) {
-  SimdUuidV4Generator<std::mt19937_64> generator;
+static void BM_SimdUuidGeneratorMt19937_64(benchmark::State &state) {
+  SimdUuidGenerator<std::mt19937_64> generator;
   for (auto _ : state) {
     for (int i = 0; i < state.range(0); ++i) {
       benchmark::DoNotOptimize(generator.GenerateUuid());
@@ -115,7 +115,7 @@ static void BM_SimdUuidV4GeneratorMt19937_64(benchmark::State &state) {
     }
   }
 }
-BENCHMARK(BM_SimdUuidV4GeneratorMt19937_64)->Range(1 << 8, 1 << 8);
+BENCHMARK(BM_SimdUuidGeneratorMt19937_64)->Range(1 << 8, 1 << 8);
 
 } // namespace andyccs
 
