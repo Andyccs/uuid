@@ -76,6 +76,13 @@ gtest_discover_tests(uuid_simd_test)
 add_executable(uuid_simd_benchmark_test uuid_simd_benchmark_test.cc)
 target_link_libraries(uuid_simd_benchmark_test uuid_simd uuid_benchmark_utils benchmark::benchmark andyccs_compiler_flags)
 
+# add the generator library
+add_library(uuid_generator uuid_generator.h)
+set_target_properties(uuid_generator PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(uuid_generator_test uuid_generator_test.cc)
+target_link_libraries(uuid_generator_test uuid_generator GTest::gtest_main andyccs_compiler_flags)
+gtest_discover_tests(uuid_generator_test)
+
 # benchmark of other libraries
 FetchContent_Declare(
   Boost
